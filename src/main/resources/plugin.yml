@@ -1,0 +1,34 @@
+name: SafeRTP
+version: ${project.version}
+description: Safe random teleport with async chunk loading, warmup, cooldowns and Vault support.
+main: com.cristian.safertp.SafeRtpPlugin
+author: Cristian
+website: https://www.spigotmc.org/resources/safertp/
+api-version: '1.21'
+load: POSTWORLD
+folia-supported: false
+
+softdepend:
+  - Vault
+  - PlaceholderAPI
+
+commands:
+  rtp:
+    description: Teleport to a random safe location
+    usage: /rtp [world] | /rtp other <player> | /rtp reload
+    permission: safertp.use
+    aliases: [randomtp, wild]
+
+permissions:
+  safertp.use:
+    description: Use /rtp
+    default: true
+  safertp.admin:
+    description: Admin commands (rtp other, reload)
+    default: op
+  safertp.bypass.cooldown:
+    description: Bypass cooldown
+    default: op
+  safertp.bypass.cost:
+    description: Bypass Vault cost
+    default: op
