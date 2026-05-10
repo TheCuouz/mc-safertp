@@ -41,6 +41,24 @@ worlds:
     cost: 0
 ```
 
+## Commands & Permissions
+
+| Command | Description | Permission | Default |
+|---|---|---|---|
+| `/rtp` | Teleport to a random safe location | `safertp.use` | true |
+| `/rtp [world]` | RTP in a specific world | `safertp.use` | true |
+| `/rtp other <player>` | Force RTP another player | `safertp.other` | op |
+| `/rtp reload` | Reload config + worlds | `safertp.admin` | op |
+
+**Cooldown bypass:** grant `safertp.cooldown.<n>` (e.g. `safertp.cooldown.60`) to set a player's cooldown to *n* seconds. Lower node wins. `safertp.cooldown.0` = no cooldown.
+
+## PlaceholderAPI
+
+| Placeholder | Value |
+|---|---|
+| `%safertp_cooldown%` | Seconds until next `/rtp` (0 if ready) |
+| `%safertp_can_use%` | `true` / `false` |
+
 ## Documentation
 
 - [CONFIG.md](docs/CONFIG.md) — all configuration options
