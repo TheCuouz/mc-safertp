@@ -55,6 +55,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.ttsstudio</groupId>
+            <artifactId>tts-sdk</artifactId>
+            <version>0.1.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.10.2</version>
@@ -92,6 +98,10 @@
                                 <relocation>
                                     <pattern>io.papermc.lib</pattern>
                                     <shadedPattern>com.cristian.safertp.libs.paperlib</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.ttsstudio.sdk</pattern>
+                                    <shadedPattern>com.cristian.${project.artifactId}.libs.ttssdk</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

@@ -73,4 +73,5 @@ public class WorldConfigRegistry {
 
     public int getDefaultCooldown() { return defaultCooldown; }
     public int getWarmupSeconds()   { return warmupSeconds; }
+    public int size()               { return configs.size(); }
 }

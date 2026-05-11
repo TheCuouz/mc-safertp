@@ -7,12 +7,15 @@ import com.cristian.safertp.integration.VaultHook;
 import com.cristian.safertp.listener.WarmupListener;
 import com.cristian.safertp.manager.CooldownManager;
 import com.cristian.safertp.manager.WarmupManager;
+import com.ttsstudio.sdk.PluginIdentity;
+import com.ttsstudio.sdk.console.ConsoleBanner;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.time.Duration;
 
 public final class SafeRtpPlugin extends JavaPlugin {
 
@@ -24,6 +27,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        long startTime = System.currentTimeMillis();
         saveDefaultConfig();
         saveResource("worlds.yml", false);
         saveResource("messages.yml", false);
@@ -58,13 +62,18 @@ public final class SafeRtpPlugin extends JavaPlugin {
 
         new Metrics(this, 12346);
 
-        getSLF4JLogger().info("SafeRTP enabled.");
+        ConsoleBanner.enable(this, PluginIdentity.of(this))
+            .status(worldConfigRegistry.size() + " world(s)")
+            .hook(vaultHook != null ? "Vault" : null)
+            .hook(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") ? "PAPI" : null)
+            .ready(Duration.ofMillis(System.currentTimeMillis() - startTime))
+            .emit();
     }
 
     @Override
     public void onDisable() {
         warmupManager.cancelAll();
-        getSLF4JLogger().info("SafeRTP disabled.");
+        ConsoleBanner.disable(this, PluginIdentity.of(this)).emit();
     }
 
     public void reload() {
