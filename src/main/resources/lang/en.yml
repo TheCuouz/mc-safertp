@@ -1,0 +1,26 @@
+# SafeRTP — english fallback
+# All strings are MiniMessage. The chat prefix is prepended by the SDK
+# automatically — no <prefix> needed here.
+
+rtp-warmup-title: "<yellow><seconds>"
+rtp-warmup-subtitle: "<gray>Don't move"
+rtp-searching: "<gray>Searching for a safe location..."
+rtp-success: "<green>Teleported to <world> (<x>, <y>, <z>)!"
+rtp-cancelled-move: "<red>Teleport cancelled — you moved."
+rtp-cancelled-damage: "<red>Teleport cancelled — you took damage."
+rtp-cooldown: "<red>You must wait <seconds>s before using /rtp again."
+rtp-no-permission: "<red>You don't have permission to use /rtp."
+rtp-world-disabled: "<red>RTP is not enabled in this world."
+rtp-world-no-permission: "<red>You don't have permission to RTP in that world."
+rtp-no-safe-location: "<red>No safe location found. Please try again."
+rtp-cost: "<yellow><amount> was charged from your balance for the RTP."
+rtp-not-enough-money: "<red>You need <amount> to use /rtp."
+rtp-player-not-found: "<red>Player '<player>' not found."
+rtp-other-success: "<green>You teleported <player> to <world>."
+reload-success: "<green>SafeRTP reloaded successfully."
+
+# /rtp back
+back-success: "<green>You returned to your previous location."
+back-no-location: "<red>No previous location available (it may have expired)."
+back-on-cooldown: "<yellow>You must wait {seconds}s before using /rtp back again."
+back-no-permission: "<red>You don't have permission to use /rtp back."
