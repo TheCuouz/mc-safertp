@@ -1,5 +1,6 @@
 package com.cristian.safertp;
 
+import com.cristian.safertp.back.BackLocationStore;
 import com.cristian.safertp.command.RtpCommand;
 import com.cristian.safertp.config.WorldConfigRegistry;
 import com.cristian.safertp.integration.PapiHook;
@@ -10,6 +11,7 @@ import com.cristian.safertp.manager.WarmupManager;
 import com.ttsstudio.sdk.PluginIdentity;
 import com.ttsstudio.sdk.console.ConsoleBanner;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,9 +21,12 @@ import java.time.Duration;
 
 public final class SafeRtpPlugin extends JavaPlugin {
 
+    private static final long BACK_PURGE_INTERVAL_TICKS = 20L * 60L; // every 60s
+
     private WorldConfigRegistry worldConfigRegistry;
     private CooldownManager cooldownManager;
     private WarmupManager warmupManager;
+    private BackLocationStore backLocationStore;
     private VaultHook vaultHook;
     private FileConfiguration messagesConfig;
 
@@ -39,6 +44,12 @@ public final class SafeRtpPlugin extends JavaPlugin {
 
         cooldownManager = new CooldownManager();
         warmupManager = new WarmupManager(this);
+
+        long ttlSeconds = getConfig().getLong("back.ttl-seconds", 300L);
+        backLocationStore = new BackLocationStore(ttlSeconds * 1000L);
+        Bukkit.getScheduler().runTaskTimer(this,
+            () -> backLocationStore.purgeExpired(),
+            BACK_PURGE_INTERVAL_TICKS, BACK_PURGE_INTERVAL_TICKS);
 
         if (getServer().getPluginManager().getPlugin("Vault") != null) {
             vaultHook = VaultHook.setup();
@@ -66,13 +77,14 @@ public final class SafeRtpPlugin extends JavaPlugin {
             .status(worldConfigRegistry.size() + " world(s)")
             .hook(vaultHook != null ? "Vault" : null)
             .hook(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") ? "PAPI" : null)
+            .hook(getConfig().getBoolean("back.enabled", true) ? "Back" : null)
             .ready(Duration.ofMillis(System.currentTimeMillis() - startTime))
             .emit();
     }
 
     @Override
     public void onDisable() {
-        warmupManager.cancelAll();
+        if (warmupManager != null) warmupManager.cancelAll();
         ConsoleBanner.disable(this, PluginIdentity.of(this)).emit();
     }
 
@@ -90,6 +102,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
     public WorldConfigRegistry getWorldConfigRegistry() { return worldConfigRegistry; }
     public CooldownManager getCooldownManager()         { return cooldownManager; }
     public WarmupManager getWarmupManager()             { return warmupManager; }
+    public BackLocationStore getBackLocationStore()     { return backLocationStore; }
     public VaultHook getVaultHook()                     { return vaultHook; }
     public FileConfiguration getMessagesConfig()        { return messagesConfig; }
 }

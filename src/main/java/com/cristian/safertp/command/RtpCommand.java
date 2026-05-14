@@ -1,6 +1,7 @@
 package com.cristian.safertp.command;
 
 import com.cristian.safertp.SafeRtpPlugin;
+import com.cristian.safertp.back.BackLocationStore;
 import com.cristian.safertp.config.WorldConfig;
 import com.cristian.safertp.finder.LocationFinder;
 import com.cristian.safertp.finder.NoSafeLocationException;
@@ -10,6 +11,7 @@ import com.ttsstudio.sdk.chat.ChatPrefix;
 import io.papermc.lib.PaperLib;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,7 +19,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 public class RtpCommand implements CommandExecutor {
+
+    private static final String BACK_KEY = "back";
 
     private static final MiniMessage MM = MiniMessage.miniMessage();
     private final SafeRtpPlugin plugin;
@@ -40,6 +46,11 @@ public class RtpCommand implements CommandExecutor {
             plugin.reload();
             ChatPrefix.send(sender, identity, msg("reload-success"));
             return true;
+        }
+
+        // /rtp back
+        if (args.length >= 1 && args[0].equalsIgnoreCase("back")) {
+            return handleBack(sender);
         }
 
         // /rtp other <player>
@@ -88,6 +99,50 @@ public class RtpCommand implements CommandExecutor {
         return true;
     }
 
+    private boolean handleBack(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            ChatPrefix.error(sender, identity, "Players only.");
+            return true;
+        }
+        if (!player.hasPermission("safertp.back")) {
+            ChatPrefix.send(player, identity, msg("back-no-permission"));
+            return true;
+        }
+
+        BackLocationStore store = plugin.getBackLocationStore();
+        if (store == null) {
+            ChatPrefix.send(player, identity, msg("back-no-location"));
+            return true;
+        }
+
+        long cooldownSeconds = plugin.getConfig().getLong("back.cooldown-seconds", 60);
+        if (!player.hasPermission("safertp.back.nocooldown")
+                && plugin.getCooldownManager().isOnCooldown(player.getUniqueId(), BACK_KEY)) {
+            long left = plugin.getCooldownManager()
+                .getRemainingSeconds(player.getUniqueId(), BACK_KEY);
+            ChatPrefix.send(player, identity,
+                msg("back-on-cooldown").replace("{seconds}", String.valueOf(left)));
+            return true;
+        }
+
+        Optional<Location> prev = store.get(player.getUniqueId());
+        if (prev.isEmpty()) {
+            ChatPrefix.send(player, identity, msg("back-no-location"));
+            return true;
+        }
+
+        PaperLib.teleportAsync(player, prev.get()).thenAccept(success -> {
+            if (!success) return;
+            store.clear(player.getUniqueId());
+            if (!player.hasPermission("safertp.back.nocooldown") && cooldownSeconds > 0) {
+                plugin.getCooldownManager()
+                    .setCooldown(player.getUniqueId(), BACK_KEY, cooldownSeconds);
+            }
+            ChatPrefix.send(player, identity, msg("back-success"));
+        });
+        return true;
+    }
+
     private void doRtp(Player player, World world, boolean bypassCooldown) {
         var optConfig = plugin.getWorldConfigRegistry().get(world.getName());
         if (optConfig.isEmpty() || !optConfig.get().enabled()) {
@@ -125,8 +180,20 @@ public class RtpCommand implements CommandExecutor {
                 player.sendActionBar(MM.deserialize(msg("rtp-searching")));
 
                 LocationFinder.findSafe(finalWorld, config).thenAccept(loc -> {
+                    // Capture pre-teleport location so /rtp back can undo this jump.
+                    BackLocationStore store = plugin.getBackLocationStore();
+                    if (store != null && plugin.getConfig().getBoolean("back.enabled", true)) {
+                        store.capture(player.getUniqueId(), player.getLocation());
+                    }
+
                     PaperLib.teleportAsync(player, loc).thenAccept(success -> {
-                        if (!success) return;
+                        if (!success) {
+                            // Roll back the back-capture if the teleport actually failed.
+                            if (store != null) {
+                                store.clear(player.getUniqueId());
+                            }
+                            return;
+                        }
 
                         // Withdraw cost
                         if (config.cost() > 0 && vault != null
