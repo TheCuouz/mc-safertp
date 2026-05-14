@@ -1,28 +1,87 @@
 # SafeRTP
 
-Random teleport plugin for Paper 1.21.4. Teleports players to safe, configurable locations within world boundaries.
+> **Async, safe random teleport for Paper 1.21.x** — Annular distribution avoids spawn clustering, biome and material filters keep players out of lava and oceans, and a one-command **`/rtp back`** undoes the jump when the wilderness looks worse than expected.
+
+> Brought to you by **TTS-Studio** — part of the unified TTS-Studio plugin suite.
+
+---
 
 ## Features
 
-- Annular distribution (avoids spawn-point clustering)
-- Per-world configuration: radius, biome whitelist/blacklist, cost, max attempts
-- Warmup countdown (title-based, cancels on move/damage)
-- Per-permission cooldown tiers (`safertp.cooldown.<n>`)
-- Vault economy cost support
-- PlaceholderAPI integration
-- Admin commands: `/rtp reload`, `/rtp other <player>`
+| Feature | Description |
+|---------|-------------|
+| **`/rtp back`** *(NEW in v1.1.0)* | Undo the last RTP and return to where you stood — pre-teleport location is cached in memory and expires after a configurable TTL |
+| **Annular distribution** | Configurable min/max radius per world; uniform-area sampling avoids spawn clustering |
+| **Async location search** | Chunk loading and safety checks run off the main thread — no server hitch on big radius searches |
+| **Biome filters** | Per-world whitelist or blacklist (`OCEAN`, `DEEP_OCEAN`, `RIVER`, etc.) |
+| **Warmup countdown** | Title-based timer that cancels on move or damage |
+| **Tiered cooldowns** | `safertp.cooldown.<n>` permission nodes — lower wins (`safertp.cooldown.0` = no cooldown) |
+| **Vault cost support** | Optional per-world money cost charged on successful teleport |
+| **PlaceholderAPI** | `%safertp_cooldown%`, `%safertp_can_use%` for scoreboards, TAB, chat |
+| **Admin commands** | `/rtp other <player>`, `/rtp reload` |
+| **TTS-Studio house style** | Suite-wide chat prefix and framed boot banner |
+| **bStats metrics** | Plugin ID 12346 |
+
+---
 
 ## Requirements
 
-- Paper 1.21.4+
-- Java 21+
-- Optional: Vault (economy costs), PlaceholderAPI
+| Dependency | Version | Scope |
+|---|---|---|
+| Paper | 1.21.4+ | Required |
+| Java | 21+ | Required |
+| Vault | any | Optional — money cost per RTP |
+| PlaceholderAPI | 2.11+ | Optional |
 
-## Installation
-
-Drop `safertp-1.0.0.jar` into your `plugins/` folder and restart.
+---
 
 ## Quick Start
+
+```bash
+# 1. Drop the jar into your plugins folder
+cp safertp-1.1.0.jar plugins/
+
+# 2. Restart the server
+#    Sample worlds.yml, messages.yml and config.yml are written on first enable.
+
+# 3. (Optional) Tune per-world radii in plugins/SafeRTP/worlds.yml
+
+# 4. Players use it
+/rtp                # random teleport in current world
+/rtp <world>        # specific world (needs safertp.world.<world>)
+/rtp back           # undo the last /rtp (NEW in v1.1.0)
+```
+
+> **Tip:** Run `/rtp reload` after any YAML change — no restart required.
+
+---
+
+## `/rtp back` — Undo your last teleport
+
+New in **v1.1.0**. When a player runs `/rtp`, their location is captured the
+instant before the teleport fires. They have a configurable window
+(`back.ttl-seconds`, default 300 s = 5 min) to run `/rtp back` and return to
+exactly where they were.
+
+```yaml
+# plugins/SafeRTP/config.yml
+back:
+  enabled: true            # set false to disable the feature entirely
+  ttl-seconds: 300         # how long a captured location stays valid
+  cooldown-seconds: 60     # cooldown between successive /rtp back calls
+```
+
+- **In-memory only** — no SQLite writes, no I/O on the hot path.
+- **Auto-expires** — a periodic sweep purges stale entries every 60 s.
+- **Independent cooldown** — `/rtp back` has its own bucket; using it does not
+  burn your `/rtp` cooldown and vice versa.
+- **Permission-gated** — grant `safertp.back.nocooldown` to skip the cooldown.
+
+---
+
+## Per-world configuration
+
+Drop a world section into `worlds.yml`, hit `/rtp reload`, and you're done.
 
 ```yaml
 # plugins/SafeRTP/worlds.yml
@@ -32,36 +91,85 @@ warmup-seconds: 5
 worlds:
   world:
     enabled: true
-    min-radius: 1000
-    max-radius: 10000
+    min-radius: 1000                   # inner ring (avoids spawn area)
+    max-radius: 10000                  # outer ring
     biome-blacklist:
       - OCEAN
       - DEEP_OCEAN
-    max-attempts: 50
-    cost: 0
+      - RIVER
+    max-attempts: 50                   # how many candidate locations to test
+    cost: 0                            # Vault cost (0 = free); requires Vault
+  world_nether:
+    enabled: true
+    min-radius: 200
+    max-radius: 2000
+    max-attempts: 100
+    cost: 100
 ```
 
-## Commands & Permissions
+---
+
+## Commands
 
 | Command | Description | Permission | Default |
 |---|---|---|---|
-| `/rtp` | Teleport to a random safe location | `safertp.use` | true |
-| `/rtp [world]` | RTP in a specific world | `safertp.use` | true |
-| `/rtp other <player>` | Force RTP another player | `safertp.other` | op |
-| `/rtp reload` | Reload config + worlds | `safertp.admin` | op |
+| `/rtp` | Teleport to a random safe location in your current world | `safertp.use` | true |
+| `/rtp <world>` | Teleport in a specific world | `safertp.use` + `safertp.world.<world>` | true / false |
+| `/rtp back` | Undo your last `/rtp` (NEW in v1.1.0) | `safertp.back` | true |
+| `/rtp other <player>` | Force RTP another player | `safertp.admin` | op |
+| `/rtp reload` | Reload `config.yml`, `worlds.yml`, `messages.yml` | `safertp.admin` | op |
 
-**Cooldown bypass:** grant `safertp.cooldown.<n>` (e.g. `safertp.cooldown.60`) to set a player's cooldown to *n* seconds. Lower node wins. `safertp.cooldown.0` = no cooldown.
+Aliases: `/randomtp`, `/wild`.
+
+---
+
+## Permissions
+
+| Permission | Description | Default |
+|------------|-------------|---------|
+| `safertp.use` | Run `/rtp` | `true` |
+| `safertp.back` | Run `/rtp back` (NEW in v1.1.0) | `true` |
+| `safertp.back.nocooldown` | Bypass the `/rtp back` cooldown (NEW in v1.1.0) | `op` |
+| `safertp.world.<world>` | Allow RTP in a specific world | `op` |
+| `safertp.bypass.cooldown` | Skip the main `/rtp` cooldown | `op` |
+| `safertp.bypass.cost` | Skip the Vault money cost | `op` |
+| `safertp.cooldown.<n>` | Tiered cooldown — sets your `/rtp` cooldown to *n* seconds, lower wins | – |
+| `safertp.admin` | `/rtp other`, `/rtp reload` | `op` |
+
+**Cooldown tiers:** grant `safertp.cooldown.60` to give a player a 60-second
+`/rtp` cooldown. The lowest matching node wins; `safertp.cooldown.0` removes
+the cooldown entirely.
+
+---
 
 ## PlaceholderAPI
 
-| Placeholder | Value |
-|---|---|
+| Placeholder | Returns |
+|-------------|---------|
 | `%safertp_cooldown%` | Seconds until next `/rtp` (0 if ready) |
 | `%safertp_can_use%` | `true` / `false` |
 
-## Documentation
+PlaceholderAPI is auto-detected on enable; placeholders silently no-op when the
+plugin is absent.
 
-- [CONFIG.md](docs/CONFIG.md) — all configuration options
-- [PERMISSIONS.md](docs/PERMISSIONS.md) — permission nodes
-- [PLACEHOLDERS.md](docs/PLACEHOLDERS.md) — PlaceholderAPI variables
-- [CHANGELOG.md](docs/CHANGELOG.md)
+---
+
+## Reporting bugs
+
+Open an issue on the GitHub repository with:
+
+- SafeRTP version (`/version SafeRTP`)
+- Server type and version (Paper build, Java version)
+- A minimal `worlds.yml` that reproduces the issue
+- Server log excerpt — especially the stack trace if there is one
+
+---
+
+## License
+
+SafeRTP is distributed under the SpigotMC free plugin license — free to use on
+any server. Resale and redistribution without authorization are prohibited.
+
+---
+
+<sub>SafeRTP is a TTS-Studio plugin · (c) TTS-Studio · safer wilderness, one click at a time.</sub>

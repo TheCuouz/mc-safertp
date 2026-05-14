@@ -7,30 +7,66 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CooldownManager {
 
-    private final ConcurrentHashMap<UUID, Long> cooldowns = new ConcurrentHashMap<>();
+    /** Default key used by the legacy single-cooldown API (the main /rtp cooldown). */
+    private static final String DEFAULT_KEY = "rtp";
+
+    /** Composite key = uuid:cooldownKey, so a player can be on cooldown for /rtp AND /rtp back independently. */
+    private final ConcurrentHashMap<String, Long> cooldowns = new ConcurrentHashMap<>();
+
+    // ----------------------------------------------------------------------
+    // Legacy API (single cooldown bucket per player) — preserved unchanged.
+    // ----------------------------------------------------------------------
 
     public void setCooldown(UUID uuid, long seconds) {
-        cooldowns.put(uuid, System.currentTimeMillis() + seconds * 1000L);
+        setCooldown(uuid, DEFAULT_KEY, seconds);
     }
 
     public long getRemaining(UUID uuid) {
-        Long expiry = cooldowns.get(uuid);
+        return getRemainingSeconds(uuid, DEFAULT_KEY);
+    }
+
+    public boolean isOnCooldown(UUID uuid) {
+        return isOnCooldown(uuid, DEFAULT_KEY);
+    }
+
+    public void clearCooldown(UUID uuid) {
+        clearCooldown(uuid, DEFAULT_KEY);
+    }
+
+    // ----------------------------------------------------------------------
+    // Multi-key API (added in 1.1.0 for /rtp back).
+    // ----------------------------------------------------------------------
+
+    public void setCooldown(UUID uuid, String key, long seconds) {
+        cooldowns.put(composite(uuid, key), System.currentTimeMillis() + seconds * 1000L);
+    }
+
+    public long getRemainingSeconds(UUID uuid, String key) {
+        Long expiry = cooldowns.get(composite(uuid, key));
         if (expiry == null) return 0L;
         long remaining = (expiry - System.currentTimeMillis() + 999) / 1000L;
         if (remaining <= 0) {
-            cooldowns.remove(uuid);
+            cooldowns.remove(composite(uuid, key));
             return 0L;
         }
         return remaining;
     }
 
-    public boolean isOnCooldown(UUID uuid) {
-        return getRemaining(uuid) > 0;
+    public boolean isOnCooldown(UUID uuid, String key) {
+        return getRemainingSeconds(uuid, key) > 0;
     }
 
-    public void clearCooldown(UUID uuid) {
-        cooldowns.remove(uuid);
+    public void clearCooldown(UUID uuid, String key) {
+        cooldowns.remove(composite(uuid, key));
     }
+
+    private static String composite(UUID uuid, String key) {
+        return uuid + ":" + key;
+    }
+
+    // ----------------------------------------------------------------------
+    // Permission-resolved cooldown for the main /rtp action.
+    // ----------------------------------------------------------------------
 
     public int resolvePlayerCooldown(Player player, int defaultCooldown) {
         if (player.hasPermission("safertp.bypass.cooldown")) return 0;

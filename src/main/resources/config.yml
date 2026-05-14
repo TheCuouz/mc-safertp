@@ -1,3 +1,15 @@
 # SafeRTP Configuration
 # World-specific settings are in worlds.yml
-config-version: 1
+config-version: 2
+
+# ============================================================
+# BACK COMMAND  (v1.1.0)
+# ============================================================
+# Permite a los jugadores deshacer su último /rtp con /rtp back.
+# La localización pre-teleport se cachea en memoria (no DB) y
+# expira tras ttl-seconds. Útil cuando el RTP cae en un bioma
+# incómodo y el jugador quiere volver donde estaba.
+back:
+  enabled: true
+  ttl-seconds: 300
+  cooldown-seconds: 60

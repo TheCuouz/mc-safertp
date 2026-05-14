@@ -15,3 +15,9 @@ rtp-not-enough-money: "<red>Necesitas <amount> para usar /rtp."
 rtp-player-not-found: "<red>Jugador '<player>' no encontrado."
 rtp-other-success: "<green>Teletransportaste a <player> a <world>."
 reload-success: "<green>SafeRTP recargado correctamente."
+
+# /rtp back  (v1.1.0)
+back-success: "<green>Has vuelto a tu ubicación anterior."
+back-no-location: "<red>No hay una ubicación anterior disponible (puede haber expirado)."
+back-on-cooldown: "<yellow>Debes esperar {seconds}s para volver a usar /rtp back."
+back-no-permission: "<red>No tienes permiso para usar /rtp back."

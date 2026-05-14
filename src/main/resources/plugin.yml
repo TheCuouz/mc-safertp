@@ -15,7 +15,7 @@ softdepend:
 commands:
   rtp:
     description: Teleport to a random safe location
-    usage: /rtp [world] | /rtp other <player> | /rtp reload
+    usage: /rtp [world] | /rtp back | /rtp other <player> | /rtp reload
     permission: safertp.use
     aliases: [randomtp, wild]
 
@@ -31,4 +31,10 @@ permissions:
     default: op
   safertp.bypass.cost:
     description: Bypass Vault cost
+    default: op
+  safertp.back:
+    description: Use /rtp back to undo a RTP
+    default: true
+  safertp.back.nocooldown:
+    description: Bypass the /rtp back cooldown
     default: op
