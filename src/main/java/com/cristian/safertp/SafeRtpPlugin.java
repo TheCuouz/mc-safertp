@@ -1,6 +1,8 @@
 package com.cristian.safertp;
 
 import com.cristian.safertp.back.BackLocationStore;
+import com.cristian.safertp.cfg.ConfigManager;
+import com.cristian.safertp.cfg.MessageManager;
 import com.cristian.safertp.command.RtpCommand;
 import com.cristian.safertp.config.WorldConfigRegistry;
 import com.cristian.safertp.integration.PapiHook;
@@ -12,32 +14,30 @@ import com.ttsstudio.sdk.PluginIdentity;
 import com.ttsstudio.sdk.console.ConsoleBanner;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.time.Duration;
 
 public final class SafeRtpPlugin extends JavaPlugin {
 
     private static final long BACK_PURGE_INTERVAL_TICKS = 20L * 60L; // every 60s
 
+    private ConfigManager configManager;
+    private MessageManager messageManager;
     private WorldConfigRegistry worldConfigRegistry;
     private CooldownManager cooldownManager;
     private WarmupManager warmupManager;
     private BackLocationStore backLocationStore;
     private VaultHook vaultHook;
-    private FileConfiguration messagesConfig;
 
     @Override
     public void onEnable() {
         long startTime = System.currentTimeMillis();
-        saveDefaultConfig();
+        configManager = new ConfigManager(this);
+        configManager.reload();
         saveResource("worlds.yml", false);
-        saveResource("messages.yml", false);
-
-        loadMessages();
+        messageManager = new MessageManager(this, configManager);
+        messageManager.reload();
 
         worldConfigRegistry = new WorldConfigRegistry(this);
         worldConfigRegistry.load();
@@ -45,7 +45,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
         cooldownManager = new CooldownManager();
         warmupManager = new WarmupManager(this);
 
-        long ttlSeconds = getConfig().getLong("back.ttl-seconds", 300L);
+        long ttlSeconds = configManager.backTtlSeconds();
         backLocationStore = new BackLocationStore(ttlSeconds * 1000L);
         Bukkit.getScheduler().runTaskTimer(this,
             () -> backLocationStore.purgeExpired(),
@@ -77,7 +77,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
             .status(worldConfigRegistry.size() + " world(s)")
             .hook(vaultHook != null ? "Vault" : null)
             .hook(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") ? "PAPI" : null)
-            .hook(getConfig().getBoolean("back.enabled", true) ? "Back" : null)
+            .hook(configManager.backEnabled() ? "Back" : null)
             .ready(Duration.ofMillis(System.currentTimeMillis() - startTime))
             .emit();
     }
@@ -89,20 +89,18 @@ public final class SafeRtpPlugin extends JavaPlugin {
     }
 
     public void reload() {
-        reloadConfig();
-        loadMessages();
+        configManager.reload();
+        messageManager.reload();
         worldConfigRegistry.load();
     }
 
-    private void loadMessages() {
-        File file = new File(getDataFolder(), "messages.yml");
-        messagesConfig = YamlConfiguration.loadConfiguration(file);
-    }
-
-    public WorldConfigRegistry getWorldConfigRegistry() { return worldConfigRegistry; }
-    public CooldownManager getCooldownManager()         { return cooldownManager; }
-    public WarmupManager getWarmupManager()             { return warmupManager; }
-    public BackLocationStore getBackLocationStore()     { return backLocationStore; }
-    public VaultHook getVaultHook()                     { return vaultHook; }
-    public FileConfiguration getMessagesConfig()        { return messagesConfig; }
+    public ConfigManager getConfigManager()            { return configManager; }
+    public MessageManager getMessages()                { return messageManager; }
+    /** Back-compat alias — call sites using .getString() compile unchanged. */
+    public MessageManager getMessagesConfig()          { return messageManager; }
+    public WorldConfigRegistry getWorldConfigRegistry(){ return worldConfigRegistry; }
+    public CooldownManager getCooldownManager()        { return cooldownManager; }
+    public WarmupManager getWarmupManager()            { return warmupManager; }
+    public BackLocationStore getBackLocationStore()    { return backLocationStore; }
+    public VaultHook getVaultHook()                    { return vaultHook; }
 }

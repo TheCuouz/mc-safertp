@@ -1,3 +1,5 @@
+> 🌐 **English** · [Español](es/Home.md)
+
 # 🌍 SafeRTP Wiki
 
 ```

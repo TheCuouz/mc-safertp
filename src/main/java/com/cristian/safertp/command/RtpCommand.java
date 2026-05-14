@@ -115,7 +115,7 @@ public class RtpCommand implements CommandExecutor {
             return true;
         }
 
-        long cooldownSeconds = plugin.getConfig().getLong("back.cooldown-seconds", 60);
+        long cooldownSeconds = plugin.getConfigManager().backCooldownSeconds();
         if (!player.hasPermission("safertp.back.nocooldown")
                 && plugin.getCooldownManager().isOnCooldown(player.getUniqueId(), BACK_KEY)) {
             long left = plugin.getCooldownManager()
@@ -182,7 +182,7 @@ public class RtpCommand implements CommandExecutor {
                 LocationFinder.findSafe(finalWorld, config).thenAccept(loc -> {
                     // Capture pre-teleport location so /rtp back can undo this jump.
                     BackLocationStore store = plugin.getBackLocationStore();
-                    if (store != null && plugin.getConfig().getBoolean("back.enabled", true)) {
+                    if (store != null && plugin.getConfigManager().backEnabled()) {
                         store.capture(player.getUniqueId(), player.getLocation());
                     }
 

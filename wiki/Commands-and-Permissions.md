@@ -1,3 +1,5 @@
+> 🌐 **English** · [Español](es/Commands-and-Permissions.md)
+
 # 🎮 Commands & Permissions
 
 ---

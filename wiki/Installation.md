@@ -1,3 +1,5 @@
+> 🌐 **English** · [Español](es/Installation.md)
+
 # 📦 Installation
 
 This page walks you through getting SafeRTP — part of the **TTS-Studio** plugin suite — running on your Paper server from zero to operational.

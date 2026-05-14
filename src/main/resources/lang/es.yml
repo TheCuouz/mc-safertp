@@ -1,4 +1,7 @@
-# SafeRTP — player-facing messages (MiniMessage format)
+# SafeRTP — castellano
+# Todos los strings son MiniMessage. El prefijo de chat lo añade el SDK
+# automáticamente — no hace falta <prefix> aquí.
+
 rtp-warmup-title: "<yellow><seconds>"
 rtp-warmup-subtitle: "<gray>No te muevas"
 rtp-searching: "<gray>Buscando localización segura..."
@@ -16,7 +19,7 @@ rtp-player-not-found: "<red>Jugador '<player>' no encontrado."
 rtp-other-success: "<green>Teletransportaste a <player> a <world>."
 reload-success: "<green>SafeRTP recargado correctamente."
 
-# /rtp back  (v1.1.0)
+# /rtp back
 back-success: "<green>Has vuelto a tu ubicación anterior."
 back-no-location: "<red>No hay una ubicación anterior disponible (puede haber expirado)."
 back-on-cooldown: "<yellow>Debes esperar {seconds}s para volver a usar /rtp back."

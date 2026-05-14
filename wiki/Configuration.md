@@ -1,3 +1,5 @@
+> 🌐 **English** · [Español](es/Configuration.md)
+
 # ⚙️ Configuration
 
 SafeRTP splits its configuration across **three** files in `plugins/SafeRTP/`. After editing any of them, apply changes with `/rtp reload` — no restart required.

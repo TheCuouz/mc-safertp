@@ -1,3 +1,5 @@
+> 🌐 **English** · [Español](es/PlaceholderAPI.md)
+
 # 📊 PlaceholderAPI Integration
 
 SafeRTP exposes its cooldown state to PlaceholderAPI so you can drop it into scoreboards, TAB plugins, chat formatters, HUDs, GUI menus — anywhere PAPI is supported.
