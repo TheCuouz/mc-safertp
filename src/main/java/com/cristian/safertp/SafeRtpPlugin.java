@@ -5,6 +5,8 @@ import com.cristian.safertp.cfg.ConfigManager;
 import com.cristian.safertp.cfg.MessageManager;
 import com.cristian.safertp.command.RtpCommand;
 import com.cristian.safertp.config.WorldConfigRegistry;
+import com.cristian.safertp.finder.LocationCache;
+import com.cristian.safertp.finder.LocationFinder;
 import com.cristian.safertp.integration.PapiHook;
 import com.cristian.safertp.integration.VaultHook;
 import com.cristian.safertp.listener.WarmupListener;
@@ -29,6 +31,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
     private WarmupManager warmupManager;
     private BackLocationStore backLocationStore;
     private VaultHook vaultHook;
+    private LocationCache locationCache;
 
     @Override
     public void onEnable() {
@@ -50,6 +53,26 @@ public final class SafeRtpPlugin extends JavaPlugin {
         Bukkit.getScheduler().runTaskTimer(this,
             () -> backLocationStore.purgeExpired(),
             BACK_PURGE_INTERVAL_TICKS, BACK_PURGE_INTERVAL_TICKS);
+
+        locationCache = new LocationCache(
+            configManager.cacheSizePerWorld(),
+            configManager.cacheRefillThreshold());
+
+        // Background cache refill — every 30s top up worlds below threshold.
+        getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
+            if (!configManager.cacheEnabled()) return;
+            for (var wc : worldConfigRegistry.all()) {
+                if (!wc.enabled()) continue;
+                org.bukkit.World w = org.bukkit.Bukkit.getWorld(wc.worldName());
+                if (w == null) continue;
+                int needed = configManager.cacheSizePerWorld() - locationCache.size(wc.worldName());
+                for (int i = 0; i < needed; i++) {
+                    LocationFinder.findSafe(w, wc)
+                        .thenAccept(loc -> locationCache.offer(wc.worldName(), loc))
+                        .exceptionally(ex -> null);
+                }
+            }
+        }, 20L * 60L, 20L * 30L);
 
         if (getServer().getPluginManager().isPluginEnabled("Vault")) {
             vaultHook = VaultHook.setup();
@@ -92,6 +115,9 @@ public final class SafeRtpPlugin extends JavaPlugin {
         configManager.reload();
         messageManager.reload();
         worldConfigRegistry.load();
+        locationCache = new LocationCache(
+            configManager.cacheSizePerWorld(),
+            configManager.cacheRefillThreshold());
     }
 
     public ConfigManager getConfigManager()            { return configManager; }
@@ -103,4 +129,5 @@ public final class SafeRtpPlugin extends JavaPlugin {
     public WarmupManager getWarmupManager()            { return warmupManager; }
     public BackLocationStore getBackLocationStore()    { return backLocationStore; }
     public VaultHook getVaultHook()                    { return vaultHook; }
+    public LocationCache getLocationCache()            { return locationCache; }
 }

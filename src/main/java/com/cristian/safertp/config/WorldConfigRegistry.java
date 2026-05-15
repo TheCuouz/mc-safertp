@@ -71,6 +71,10 @@ public class WorldConfigRegistry {
         return Optional.ofNullable(configs.get(worldName));
     }
 
+    public java.util.Collection<WorldConfig> all() {
+        return java.util.Collections.unmodifiableCollection(configs.values());
+    }
+
     public int getDefaultCooldown() { return defaultCooldown; }
     public int getWarmupSeconds()   { return warmupSeconds; }
     public int size()               { return configs.size(); }

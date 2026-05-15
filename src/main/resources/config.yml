@@ -39,3 +39,12 @@ arrival:
     type: ENTITY_ENDERMAN_TELEPORT
     volume: 1.0
     pitch: 1.2
+
+# ============================================================
+# LOCATION CACHE  (v1.2.0)
+# ============================================================
+# Pre-calculates safe RTP locations in background so /rtp is instant.
+cache:
+  enabled: true
+  size-per-world: 6
+  refill-threshold: 2
