@@ -44,4 +44,9 @@ class DangerousMaterialsTest {
     void setHasExpectedSize() {
         assertEquals(9, SafetyChecker.DANGEROUS_FLOOR.size());
     }
+
+    @Test
+    void dangerousFloorSet_hasExpectedSize() {
+        assertEquals(9, SafetyChecker.DANGEROUS_FLOOR.size());
+    }
 }

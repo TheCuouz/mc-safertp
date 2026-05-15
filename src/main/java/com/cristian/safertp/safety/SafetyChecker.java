@@ -18,7 +18,10 @@ public final class SafetyChecker {
     private SafetyChecker() {}
 
     public static boolean isSafe(Location loc, WorldConfig config) {
-        if (loc.getWorld() == null) return false;
+        if (loc == null || loc.getWorld() == null) return false;
+
+        // Respect server world border
+        if (!loc.getWorld().getWorldBorder().isInside(loc)) return false;
 
         int y    = loc.getBlockY();
         int minY = loc.getWorld().getMinHeight() + 1;
