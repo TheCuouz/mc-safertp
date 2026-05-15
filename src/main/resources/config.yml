@@ -20,3 +20,22 @@ back:
   enabled: true
   ttl-seconds: 300
   cooldown-seconds: 60
+
+# ============================================================
+# ARRIVAL EFFECTS  (v1.2.0)
+# ============================================================
+# Applied immediately after a successful RTP teleport.
+arrival:
+  # Seconds of invulnerability (no-damage ticks) on landing. 0 = disabled.
+  invulnerability-seconds: 5
+  particles:
+    enabled: true
+    # Any Bukkit Particle enum name. See: https://jd.papermc.io/paper/1.21/
+    type: END_ROD
+    count: 40
+  sound:
+    enabled: true
+    # Any Bukkit Sound enum name.
+    type: ENTITY_ENDERMAN_TELEPORT
+    volume: 1.0
+    pitch: 1.2

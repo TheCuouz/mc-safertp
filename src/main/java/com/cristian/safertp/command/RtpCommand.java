@@ -213,6 +213,9 @@ public class RtpCommand implements CommandExecutor {
                             }
                         }
 
+                        // Arrival effects (invulnerability, particles, sound)
+                        applyArrivalEffects(player, loc);
+
                         ChatPrefix.send(player, identity,
                             msg("rtp-success")
                                 .replace("<world>", finalWorld.getName())
@@ -229,6 +232,39 @@ public class RtpCommand implements CommandExecutor {
                     return null;
                 });
             });
+    }
+
+    private void applyArrivalEffects(Player player, Location loc) {
+        int invuln = plugin.getConfigManager().arrivalInvulnerabilitySeconds();
+        if (invuln > 0) {
+            player.setNoDamageTicks(invuln * 20);
+        }
+
+        if (plugin.getConfigManager().arrivalParticlesEnabled()) {
+            try {
+                org.bukkit.Particle particle = org.bukkit.Particle.valueOf(
+                    plugin.getConfigManager().arrivalParticleType());
+                loc.getWorld().spawnParticle(particle, loc.clone().add(0, 1, 0),
+                    plugin.getConfigManager().arrivalParticleCount(),
+                    0.5, 0.8, 0.5, 0.05);
+            } catch (IllegalArgumentException e) {
+                plugin.getSLF4JLogger().warn("Invalid arrival particle type: {}",
+                    plugin.getConfigManager().arrivalParticleType());
+            }
+        }
+
+        if (plugin.getConfigManager().arrivalSoundEnabled()) {
+            try {
+                org.bukkit.Sound sound = org.bukkit.Sound.valueOf(
+                    plugin.getConfigManager().arrivalSoundType());
+                loc.getWorld().playSound(loc, sound,
+                    plugin.getConfigManager().arrivalSoundVolume(),
+                    plugin.getConfigManager().arrivalSoundPitch());
+            } catch (IllegalArgumentException e) {
+                plugin.getSLF4JLogger().warn("Invalid arrival sound type: {}",
+                    plugin.getConfigManager().arrivalSoundType());
+            }
+        }
     }
 
     private String msg(String key) {
