@@ -1,6 +1,7 @@
 package com.cristian.safertp;
 
 import com.cristian.safertp.back.BackLocationStore;
+import com.cristian.safertp.discovery.BiomeDiscoveryTracker;
 import com.cristian.safertp.cfg.ConfigManager;
 import com.cristian.safertp.cfg.MessageManager;
 import com.cristian.safertp.command.RtpCommand;
@@ -34,6 +35,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
     private VaultHook vaultHook;
     private WorldGuardHook worldGuardHook;
     private LocationCache locationCache;
+    private BiomeDiscoveryTracker discoveryTracker;
 
     @Override
     public void onEnable() {
@@ -52,6 +54,9 @@ public final class SafeRtpPlugin extends JavaPlugin {
 
         long ttlSeconds = configManager.backTtlSeconds();
         backLocationStore = new BackLocationStore(ttlSeconds * 1000L);
+
+        discoveryTracker = new BiomeDiscoveryTracker(getDataFolder());
+        discoveryTracker.load();
         Bukkit.getScheduler().runTaskTimer(this,
             () -> backLocationStore.purgeExpired(),
             BACK_PURGE_INTERVAL_TICKS, BACK_PURGE_INTERVAL_TICKS);
@@ -116,6 +121,11 @@ public final class SafeRtpPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         if (warmupManager != null) warmupManager.cancelAll();
+        if (discoveryTracker != null) {
+            try { discoveryTracker.save(); } catch (RuntimeException e) {
+                getSLF4JLogger().error("Failed to save discoveries", e);
+            }
+        }
         ConsoleBanner.disable(this, PluginIdentity.of(this)).emit();
     }
 
@@ -139,4 +149,5 @@ public final class SafeRtpPlugin extends JavaPlugin {
     public VaultHook getVaultHook()                    { return vaultHook; }
     public WorldGuardHook getWorldGuardHook()          { return worldGuardHook; }
     public LocationCache getLocationCache()            { return locationCache; }
+    public BiomeDiscoveryTracker getDiscoveryTracker() { return discoveryTracker; }
 }
