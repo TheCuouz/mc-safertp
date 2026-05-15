@@ -40,4 +40,9 @@ public final class ConfigManager {
     public String  arrivalSoundType()             { return cfg.getString("arrival.sound.type", "ENTITY_ENDERMAN_TELEPORT"); }
     public float   arrivalSoundVolume()           { return (float) cfg.getDouble("arrival.sound.volume", 1.0); }
     public float   arrivalSoundPitch()            { return (float) cfg.getDouble("arrival.sound.pitch", 1.2); }
+
+    // ─── Location cache ───────────────────────────────────────────────────────
+    public boolean cacheEnabled()         { return cfg.getBoolean("cache.enabled", true); }
+    public int     cacheSizePerWorld()    { return cfg.getInt("cache.size-per-world", 6); }
+    public int     cacheRefillThreshold() { return cfg.getInt("cache.refill-threshold", 2); }
 }

@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class RtpCommand implements CommandExecutor {
 
@@ -177,9 +178,20 @@ public class RtpCommand implements CommandExecutor {
         plugin.getWarmupManager().start(player,
             plugin.getWorldConfigRegistry().getWarmupSeconds(), () -> {
 
-                player.sendActionBar(MM.deserialize(msg("rtp-searching")));
+                Optional<Location> cached = plugin.getLocationCache() != null
+                        && plugin.getConfigManager().cacheEnabled()
+                    ? plugin.getLocationCache().poll(finalWorld.getName())
+                    : Optional.empty();
 
-                LocationFinder.findSafe(finalWorld, config).thenAccept(loc -> {
+                CompletableFuture<Location> locationFuture;
+                if (cached.isPresent()) {
+                    locationFuture = CompletableFuture.completedFuture(cached.get());
+                } else {
+                    player.sendActionBar(MM.deserialize(msg("rtp-searching")));
+                    locationFuture = LocationFinder.findSafe(finalWorld, config);
+                }
+
+                locationFuture.thenAccept(loc -> {
                     // Capture pre-teleport location so /rtp back can undo this jump.
                     BackLocationStore store = plugin.getBackLocationStore();
                     if (store != null && plugin.getConfigManager().backEnabled()) {
@@ -224,7 +236,8 @@ public class RtpCommand implements CommandExecutor {
                                 .replace("<z>", String.valueOf(loc.getBlockZ())));
                     });
                 }).exceptionally(ex -> {
-                    if (ex.getCause() instanceof NoSafeLocationException) {
+                    Throwable cause = ex.getCause() != null ? ex.getCause() : ex;
+                    if (cause instanceof NoSafeLocationException) {
                         ChatPrefix.send(player, identity, msg("rtp-no-safe-location"));
                     } else {
                         plugin.getSLF4JLogger().error("RTP search error", ex);
