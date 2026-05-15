@@ -45,4 +45,11 @@ public final class ConfigManager {
     public boolean cacheEnabled()         { return cfg.getBoolean("cache.enabled", true); }
     public int     cacheSizePerWorld()    { return cfg.getInt("cache.size-per-world", 6); }
     public int     cacheRefillThreshold() { return cfg.getInt("cache.refill-threshold", 2); }
+
+    // ─── Biome discovery ──────────────────────────────────────────────────────
+    public boolean discoveryEnabled()      { return cfg.getBoolean("discovery.enabled", true); }
+    public boolean discoverySoundEnabled() { return cfg.getBoolean("discovery.sound.enabled", true); }
+    public String  discoverySoundType()    { return cfg.getString("discovery.sound.type", "UI_TOAST_CHALLENGE_COMPLETE"); }
+    public float   discoverySoundVolume()  { return (float) cfg.getDouble("discovery.sound.volume", 1.0); }
+    public float   discoverySoundPitch()   { return (float) cfg.getDouble("discovery.sound.pitch", 1.0); }
 }

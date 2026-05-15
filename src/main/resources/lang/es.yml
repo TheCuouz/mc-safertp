@@ -23,3 +23,8 @@ back-success: "<green>Has vuelto a tu ubicación anterior."
 back-no-location: "<red>No hay una ubicación anterior disponible (puede haber expirado)."
 back-on-cooldown: "<yellow>Debes esperar {seconds}s para volver a usar /rtp back."
 back-no-permission: "<red>No tienes permiso para usar /rtp back."
+
+# Descubrimiento de bioma
+discovery-title: "<gold><bold>¡Nuevo Descubrimiento!</bold></gold>"
+discovery-subtitle: "<yellow><biome></yellow>"
+discovery-chat: "<gray>Has descubierto un nuevo bioma: <yellow><biome></yellow>"

@@ -3,6 +3,7 @@ package com.cristian.safertp.command;
 import com.cristian.safertp.SafeRtpPlugin;
 import com.cristian.safertp.back.BackLocationStore;
 import com.cristian.safertp.config.WorldConfig;
+import com.cristian.safertp.discovery.BiomeDiscoveryTracker;
 import com.cristian.safertp.finder.LocationFinder;
 import com.cristian.safertp.finder.NoSafeLocationException;
 import com.cristian.safertp.integration.VaultHook;
@@ -10,6 +11,7 @@ import com.ttsstudio.sdk.PluginIdentity;
 import com.ttsstudio.sdk.chat.ChatPrefix;
 import io.papermc.lib.PaperLib;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -19,8 +21,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class RtpCommand implements CommandExecutor {
 
@@ -228,6 +233,9 @@ public class RtpCommand implements CommandExecutor {
                         // Arrival effects (invulnerability, particles, sound)
                         applyArrivalEffects(player, loc);
 
+                        // Biome discovery notification
+                        checkBiomeDiscovery(player, loc);
+
                         ChatPrefix.send(player, identity,
                             msg("rtp-success")
                                 .replace("<world>", finalWorld.getName())
@@ -278,6 +286,54 @@ public class RtpCommand implements CommandExecutor {
                     plugin.getConfigManager().arrivalSoundType());
             }
         }
+    }
+
+    private void checkBiomeDiscovery(Player player, Location loc) {
+        if (!plugin.getConfigManager().discoveryEnabled()) return;
+        BiomeDiscoveryTracker tracker = plugin.getDiscoveryTracker();
+        if (tracker == null) return;
+
+        String biomeName = formatBiomeName(
+            loc.getWorld().getBiome(loc).getKey().getKey());
+
+        if (!tracker.discover(player.getUniqueId(), biomeName)) return;
+
+        String titleStr    = plugin.getMessagesConfig().getString("discovery-title", "<gold>New Discovery!");
+        String subtitleStr = plugin.getMessagesConfig().getString("discovery-subtitle", "<yellow><biome>")
+            .replace("<biome>", biomeName);
+        String chatStr     = plugin.getMessagesConfig().getString("discovery-chat", "New biome: <biome>")
+            .replace("<biome>", biomeName);
+
+        player.showTitle(Title.title(
+            MM.deserialize(titleStr),
+            MM.deserialize(subtitleStr),
+            Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofMillis(500))));
+        player.sendMessage(MM.deserialize(chatStr));
+
+        if (plugin.getConfigManager().discoverySoundEnabled()) {
+            try {
+                org.bukkit.Sound sound = org.bukkit.Sound.valueOf(
+                    plugin.getConfigManager().discoverySoundType());
+                player.playSound(player.getLocation(), sound,
+                    plugin.getConfigManager().discoverySoundVolume(),
+                    plugin.getConfigManager().discoverySoundPitch());
+            } catch (IllegalArgumentException e) {
+                plugin.getSLF4JLogger().warn("Invalid discovery sound: {}",
+                    plugin.getConfigManager().discoverySoundType());
+            }
+        }
+
+        CompletableFuture.runAsync(() -> {
+            try { tracker.save(); } catch (RuntimeException e) {
+                plugin.getSLF4JLogger().error("Failed to save discoveries", e);
+            }
+        });
+    }
+
+    private static String formatBiomeName(String key) {
+        return Arrays.stream(key.split("_"))
+            .map(w -> Character.toUpperCase(w.charAt(0)) + w.substring(1).toLowerCase())
+            .collect(Collectors.joining(" "));
     }
 
     private String msg(String key) {

@@ -48,3 +48,16 @@ cache:
   enabled: true
   size-per-world: 6
   refill-threshold: 2
+
+# ============================================================
+# BIOME DISCOVERY  (v1.2.0)
+# ============================================================
+# Special notification the first time a player RTP-lands in a new biome.
+# Discoveries persist across restarts in discoveries.yml.
+discovery:
+  enabled: true
+  sound:
+    enabled: true
+    type: UI_TOAST_CHALLENGE_COMPLETE
+    volume: 1.0
+    pitch: 1.0
