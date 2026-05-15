@@ -30,4 +30,14 @@ public final class ConfigManager {
     public boolean backEnabled()        { return cfg.getBoolean("back.enabled", true); }
     public long    backTtlSeconds()     { return cfg.getLong("back.ttl-seconds", 300L); }
     public long    backCooldownSeconds(){ return cfg.getLong("back.cooldown-seconds", 60L); }
+
+    // ─── Arrival effects ──────────────────────────────────────────────────────
+    public int    arrivalInvulnerabilitySeconds() { return cfg.getInt("arrival.invulnerability-seconds", 5); }
+    public boolean arrivalParticlesEnabled()      { return cfg.getBoolean("arrival.particles.enabled", true); }
+    public String  arrivalParticleType()          { return cfg.getString("arrival.particles.type", "END_ROD"); }
+    public int     arrivalParticleCount()         { return cfg.getInt("arrival.particles.count", 40); }
+    public boolean arrivalSoundEnabled()          { return cfg.getBoolean("arrival.sound.enabled", true); }
+    public String  arrivalSoundType()             { return cfg.getString("arrival.sound.type", "ENTITY_ENDERMAN_TELEPORT"); }
+    public float   arrivalSoundVolume()           { return (float) cfg.getDouble("arrival.sound.volume", 1.0); }
+    public float   arrivalSoundPitch()            { return (float) cfg.getDouble("arrival.sound.pitch", 1.2); }
 }
