@@ -1,10 +1,12 @@
 package com.cristian.safertp.safety;
 
 import com.cristian.safertp.config.WorldConfig;
+import com.cristian.safertp.integration.WorldGuardHook;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -18,10 +20,16 @@ public final class SafetyChecker {
     private SafetyChecker() {}
 
     public static boolean isSafe(Location loc, WorldConfig config) {
+        return isSafe(loc, config, null);
+    }
+
+    public static boolean isSafe(Location loc, WorldConfig config,
+                                  @Nullable WorldGuardHook wgHook) {
         if (loc == null || loc.getWorld() == null) return false;
 
-        // Respect server world border
         if (!loc.getWorld().getWorldBorder().isInside(loc)) return false;
+
+        if (wgHook != null && wgHook.isInProtectedRegion(loc)) return false;
 
         int y    = loc.getBlockY();
         int minY = loc.getWorld().getMinHeight() + 1;

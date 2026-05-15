@@ -9,6 +9,7 @@ import com.cristian.safertp.finder.LocationCache;
 import com.cristian.safertp.finder.LocationFinder;
 import com.cristian.safertp.integration.PapiHook;
 import com.cristian.safertp.integration.VaultHook;
+import com.cristian.safertp.integration.WorldGuardHook;
 import com.cristian.safertp.listener.WarmupListener;
 import com.cristian.safertp.manager.CooldownManager;
 import com.cristian.safertp.manager.WarmupManager;
@@ -31,6 +32,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
     private WarmupManager warmupManager;
     private BackLocationStore backLocationStore;
     private VaultHook vaultHook;
+    private WorldGuardHook worldGuardHook;
     private LocationCache locationCache;
 
     @Override
@@ -67,7 +69,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
                 if (w == null) continue;
                 int needed = configManager.cacheSizePerWorld() - locationCache.size(wc.worldName());
                 for (int i = 0; i < needed; i++) {
-                    LocationFinder.findSafe(w, wc)
+                    LocationFinder.findSafe(w, wc, worldGuardHook)
                         .thenAccept(loc -> locationCache.offer(wc.worldName(), loc))
                         .exceptionally(ex -> null);
                 }
@@ -79,6 +81,11 @@ public final class SafeRtpPlugin extends JavaPlugin {
             if (vaultHook != null) {
                 getSLF4JLogger().info("Vault economy hooked.");
             }
+        }
+
+        worldGuardHook = WorldGuardHook.setup();
+        if (worldGuardHook != null) {
+            getSLF4JLogger().info("WorldGuard region protection hooked.");
         }
 
         getServer().getPluginManager().registerEvents(new WarmupListener(this), this);
@@ -101,6 +108,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
             .hook(vaultHook != null ? "Vault" : null)
             .hook(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") ? "PAPI" : null)
             .hook(configManager.backEnabled() ? "Back" : null)
+            .hook(worldGuardHook != null ? "WorldGuard" : null)
             .ready(Duration.ofMillis(System.currentTimeMillis() - startTime))
             .emit();
     }
@@ -129,5 +137,6 @@ public final class SafeRtpPlugin extends JavaPlugin {
     public WarmupManager getWarmupManager()            { return warmupManager; }
     public BackLocationStore getBackLocationStore()    { return backLocationStore; }
     public VaultHook getVaultHook()                    { return vaultHook; }
+    public WorldGuardHook getWorldGuardHook()          { return worldGuardHook; }
     public LocationCache getLocationCache()            { return locationCache; }
 }

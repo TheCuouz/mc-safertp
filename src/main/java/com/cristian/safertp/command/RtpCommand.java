@@ -188,7 +188,7 @@ public class RtpCommand implements CommandExecutor {
                     locationFuture = CompletableFuture.completedFuture(cached.get());
                 } else {
                     player.sendActionBar(MM.deserialize(msg("rtp-searching")));
-                    locationFuture = LocationFinder.findSafe(finalWorld, config);
+                    locationFuture = LocationFinder.findSafe(finalWorld, config, plugin.getWorldGuardHook());
                 }
 
                 locationFuture.thenAccept(loc -> {
