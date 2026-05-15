@@ -51,7 +51,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
             () -> backLocationStore.purgeExpired(),
             BACK_PURGE_INTERVAL_TICKS, BACK_PURGE_INTERVAL_TICKS);
 
-        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+        if (getServer().getPluginManager().isPluginEnabled("Vault")) {
             vaultHook = VaultHook.setup();
             if (vaultHook != null) {
                 getSLF4JLogger().info("Vault economy hooked.");
@@ -66,7 +66,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
             cmd.setExecutor(rtpExecutor);
         }
 
-        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new PapiHook(this).register();
             getSLF4JLogger().info("PlaceholderAPI expansion registered.");
         }
