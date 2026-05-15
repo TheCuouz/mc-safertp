@@ -2,8 +2,7 @@
 # All strings are MiniMessage. The chat prefix is prepended by the SDK
 # automatically — no <prefix> needed here.
 
-rtp-warmup-title: "<yellow><seconds>"
-rtp-warmup-subtitle: "<gray>Don't move"
+rtp-warmup-action-bar: "<yellow>⏳ Teleporting in <bold><seconds>s</bold>... Don't move!"
 rtp-searching: "<gray>Searching for a safe location..."
 rtp-success: "<green>Teleported to <world> (<x>, <y>, <z>)!"
 rtp-cancelled-move: "<red>Teleport cancelled — you moved."
