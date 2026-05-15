@@ -11,6 +11,7 @@ folia-supported: false
 softdepend:
   - Vault
   - PlaceholderAPI
+  - WorldGuard
 
 commands:
   rtp:
