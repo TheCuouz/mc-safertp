@@ -47,7 +47,7 @@ public final class LocationFinder {
         int x = config.centerX() + (int) (radius * Math.cos(angle));
         int z = config.centerZ() + (int) (radius * Math.sin(angle));
 
-        PaperLib.getChunkAtAsync(world, x >> 4, z >> 4, false)
+        PaperLib.getChunkAtAsync(world, x >> 4, z >> 4, true)
             .thenAccept(chunk -> {
                 int y = world.getHighestBlockYAt(x, z, HeightMap.MOTION_BLOCKING_NO_LEAVES);
                 Location candidate = new Location(world, x + 0.5, y + 1, z + 0.5);
