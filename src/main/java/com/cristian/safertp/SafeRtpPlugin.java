@@ -106,7 +106,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
             getSLF4JLogger().info("PlaceholderAPI expansion registered.");
         }
 
-        new Metrics(this, 12346);
+        new Metrics(this, 31364);
 
         ConsoleBanner.enable(this, PluginIdentity.of(this))
             .status(worldConfigRegistry.size() + " world(s)")
