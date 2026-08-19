@@ -7,7 +7,11 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import java.util.logging.Logger;
+
 public class WorldGuardHook {
+
+    private static final Logger LOGGER = Logger.getLogger("SafeRTP");
 
     private final RegionContainer regionContainer;
 
@@ -21,7 +25,16 @@ public class WorldGuardHook {
             RegionContainer container =
                 WorldGuard.getInstance().getPlatform().getRegionContainer();
             return new WorldGuardHook(container);
-        } catch (Exception e) {
+        } catch (LinkageError e) {
+            // WorldGuard is present but its classes can't be linked (version
+            // mismatch / wrong class file version). Surface it instead of
+            // silently disabling region protection.
+            LOGGER.severe("WorldGuard is installed but could not be linked"
+                + " (version mismatch?). Region protection is DISABLED: " + e);
+            return null;
+        } catch (RuntimeException e) {
+            LOGGER.warning("Failed to hook WorldGuard; region protection is"
+                + " disabled: " + e);
             return null;
         }
     }

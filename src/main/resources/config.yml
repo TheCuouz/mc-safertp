@@ -12,10 +12,10 @@ config-version: 2
 # ============================================================
 # BACK COMMAND  (v1.1.0)
 # ============================================================
-# Permite a los jugadores deshacer su último /rtp con /rtp back.
-# La localización pre-teleport se cachea en memoria (no DB) y
-# expira tras ttl-seconds. Útil cuando el RTP cae en un bioma
-# incómodo y el jugador quiere volver donde estaba.
+# Lets players undo their last /rtp with /rtp back.
+# The pre-teleport location is cached in memory (not in the database)
+# and expires after ttl-seconds. Handy when the RTP drops someone in
+# an awkward biome and they just want to go back.
 back:
   enabled: true
   ttl-seconds: 300
