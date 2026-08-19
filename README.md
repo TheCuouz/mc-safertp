@@ -22,6 +22,9 @@
 | Feature | Description |
 |---------|-------------|
 | ↩️ **`/rtp back`** *(NEW in v1.1.0)* | Undo the last RTP and return to where you stood — pre-teleport location is cached in memory and expires after a configurable TTL |
+| ✨ **Arrival effects** *(NEW in v1.2.0)* | Landing invulnerability (configurable seconds), particle burst and sound on a successful RTP — all toggleable in `config.yml` |
+| ⚡ **Pre-generated location cache** *(NEW in v1.2.0)* | Safe locations are pre-computed in the background (1 per tick per world) so `/rtp` lands instantly after warmup; refills automatically when the deque drops below a threshold |
+| 🗺️ **Biome discovery** *(NEW in v1.2.0)* | First time a player lands in a new biome, a title + chat notification + sound fires; discoveries persist across restarts in `discoveries.yml` |
 | 🎯 **Annular distribution** | Configurable min/max radius per world; uniform-area sampling avoids spawn clustering |
 | ⚡ **Async location search** | Chunk loading and safety checks run off the main thread — no server hitch on big radius searches |
 | 🌿 **Biome filters** | Per-world whitelist or blacklist (`OCEAN`, `DEEP_OCEAN`, `RIVER`, etc.) |
@@ -31,7 +34,7 @@
 | 📊 **PlaceholderAPI** | `%safertp_cooldown%`, `%safertp_can_use%` for scoreboards, TAB, chat |
 | 🛠️ **Admin commands** | `/rtp other <player>`, `/rtp reload` |
 | 🎨 **TTS-Studio house style** | Suite-wide chat prefix and framed boot banner |
-| 📈 **bStats metrics** | Plugin ID 12346 |
+| 📈 **bStats metrics** | Plugin ID 31364 |
 
 ---
 
@@ -43,6 +46,7 @@
 | Java | 21+ | ✅ Required |
 | Vault | any | Optional — money cost per RTP |
 | PlaceholderAPI | 2.11+ | Optional |
+| WorldGuard | 7+ | Optional — skips protected regions during RTP search |
 
 ---
 
@@ -50,7 +54,7 @@
 
 ```bash
 # 1. Drop the jar into your plugins folder
-cp safertp-1.1.0.jar plugins/
+cp safertp-1.2.2.jar plugins/
 
 # 2. Restart the server
 #    Sample worlds.yml, messages.yml and config.yml are written on first enable.

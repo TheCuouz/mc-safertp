@@ -22,6 +22,9 @@
 | Funcionalidad | Descripción |
 |---------|-------------|
 | ↩️ **`/rtp back`** *(NUEVO en v1.1.0)* | Deshace el último RTP y regresa donde estabas — la ubicación previa al teletransporte se guarda en memoria y expira tras un TTL configurable |
+| ✨ **Efectos de llegada** *(NUEVO en v1.2.0)* | Invulnerabilidad al aterrizar (segundos configurables), explosión de partículas y sonido tras un RTP exitoso — todo activable/desactivable en `config.yml` |
+| ⚡ **Caché de ubicaciones pre-generadas** *(NUEVO en v1.2.0)* | Las ubicaciones seguras se pre-calculan en segundo plano (1 por tick por mundo) para que `/rtp` aterrice al instante tras el warmup; se rellena automáticamente cuando el deque baja de un umbral |
+| 🗺️ **Descubrimiento de biomas** *(NUEVO en v1.2.0)* | La primera vez que un jugador aterriza en un bioma nuevo, salta una notificación de título + chat + sonido; los descubrimientos persisten entre reinicios en `discoveries.yml` |
 | 🎯 **Distribución anular** | Radio mínimo/máximo configurable por mundo; el muestreo de área uniforme evita la acumulación cerca del spawn |
 | ⚡ **Búsqueda de ubicación asíncrona** | La carga de chunks y las comprobaciones de seguridad se ejecutan fuera del hilo principal — sin lag en el servidor con radios grandes |
 | 🌿 **Filtros de bioma** | Whitelist o blacklist por mundo (`OCEAN`, `DEEP_OCEAN`, `RIVER`, etc.) |
@@ -31,7 +34,7 @@
 | 📊 **PlaceholderAPI** | `%safertp_cooldown%`, `%safertp_can_use%` para scoreboards, TAB, chat |
 | 🛠️ **Comandos de admin** | `/rtp other <player>`, `/rtp reload` |
 | 🎨 **Estilo TTS-Studio** | Prefijo de chat unificado de la suite y banner de inicio enmarcado en consola |
-| 📈 **Métricas bStats** | Plugin ID 12346 |
+| 📈 **Métricas bStats** | Plugin ID 31364 |
 
 ---
 
@@ -43,6 +46,7 @@
 | Java | 21+ | ✅ Obligatorio |
 | Vault | cualquiera | Opcional — coste en dinero por RTP |
 | PlaceholderAPI | 2.11+ | Opcional |
+| WorldGuard | 7+ | Opcional — evita regiones protegidas durante la búsqueda de RTP |
 
 ---
 
@@ -50,7 +54,7 @@
 
 ```bash
 # 1. Copia el jar en tu carpeta de plugins
-cp safertp-1.1.0.jar plugins/
+cp safertp-1.2.2.jar plugins/
 
 # 2. Reinicia el servidor
 #    Se generan worlds.yml, messages.yml y config.yml de muestra en el primer inicio.

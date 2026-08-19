@@ -4,6 +4,48 @@ All notable changes to SafeRTP are documented in this file. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 follows semantic versioning.
 
+## [1.2.2] - 2026-05-18
+
+### Fixed
+
+- Resolved a stall on the post-boot location-cache pre-warm so the background
+  refill no longer hangs on startup.
+
+## [1.2.1] - 2026-05-14
+
+### Fixed
+
+- Corrected the bStats plugin ID to the real value (`31364`).
+
+## [1.2.0] - 2026-05-14
+
+### Added
+
+- **Arrival effects** — on a successful RTP, the player gets configurable
+  landing invulnerability (no-damage ticks), a particle burst and a sound.
+  All three are toggleable in `config.yml` under `arrival:`.
+- **Pre-generated location cache** — safe locations are pre-computed in the
+  background (1 per tick per world) so `/rtp` lands instantly after the warmup.
+  The deque refills automatically when it drops below `cache.refill-threshold`.
+  Configurable via the `cache:` section of `config.yml`.
+- **Biome discovery** — the first time a player lands in a new biome, a title,
+  chat message and sound fire. Discoveries persist across restarts in
+  `discoveries.yml`. Configurable via the `discovery:` section of `config.yml`.
+- **WorldGuard integration** — RTP search now skips WorldGuard-protected
+  regions when WorldGuard is installed (soft dependency, auto-detected).
+- **Bilingual language files** — bundled `lang/es.yml` and `lang/en.yml`,
+  selectable via `language:` in `config.yml`, with fallback to English for
+  missing keys.
+
+### Changed
+
+- Warmup countdown now renders in the action bar instead of as a title.
+
+### Fixed
+
+- `SafetyChecker` now respects the world border when validating candidate
+  locations.
+
 ## [1.1.0] - 2026-05-14
 
 ### Added
@@ -58,4 +100,4 @@ follows semantic versioning.
 - PlaceholderAPI expansion exposing `%safertp_cooldown%` and
   `%safertp_can_use%`.
 - Admin commands `/rtp other <player>` and `/rtp reload`.
-- bStats metrics (plugin ID 12346).
+- bStats metrics (plugin ID 31364).
