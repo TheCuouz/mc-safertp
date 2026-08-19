@@ -39,7 +39,7 @@ public class WarmupListener implements Listener {
         player.sendActionBar(Component.empty());
         ChatPrefix.send(player, identity,
             plugin.getMessagesConfig().getString("rtp-cancelled-move",
-                "<red>Teletransporte cancelado al moverte."));
+                "<red>Teleport cancelled: you moved."));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -51,7 +51,7 @@ public class WarmupListener implements Listener {
         player.sendActionBar(Component.empty());
         ChatPrefix.send(player, identity,
             plugin.getMessagesConfig().getString("rtp-cancelled-damage",
-                "<red>Teletransporte cancelado al recibir daño."));
+                "<red>Teleport cancelled: you took damage."));
     }
 
     @EventHandler

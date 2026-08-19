@@ -5,7 +5,7 @@
 # Bundled out of the box: es (Spanish), en (English).
 # Missing keys fall back to en automatically. Operators can drop extra
 # lang/<code>.yml files in plugins/SafeRTP/lang/.
-language: es
+language: en
 
 config-version: 2
 
