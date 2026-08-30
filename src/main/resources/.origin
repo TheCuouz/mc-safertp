@@ -1,0 +1,4 @@
+source=%%__BUILTBYBIT__%%
+resource=%%__RESOURCE__%%
+release=%%__VERSION__%%
+stamp=%%__TIMESTAMP__%%
