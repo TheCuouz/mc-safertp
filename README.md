@@ -181,7 +181,7 @@ Open an issue on the GitHub repository with:
 
 ## 📜 License
 
-SafeRTP is distributed under the SpigotMC free plugin license — free to use on any server. Resale and redistribution without authorization are prohibited.
+Free to download and run on any server, under the **TTS-Studio Free License** (see `LICENSE`). Resale, rebranding and re-uploading elsewhere are not permitted — link to the official listing instead.
 
 ---
 

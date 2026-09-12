@@ -1,21 +1,39 @@
-MIT License
+TTS-Studio Free License
+SafeRTP
+Copyright (c) 2026 TTS-Studio. All rights reserved.
 
-Copyright (c) 2026 Cristian
+1. Grant
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+   This software is distributed free of charge. Anyone may download it and run
+   it on any server, private or public, commercial or not, at no cost and with
+   no registration.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+2. Restrictions
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+   It may not be resold, rebranded, sublicensed or published elsewhere, in
+   original or modified form, nor may its licensing, attribution or anti-piracy
+   markings be removed or altered. Redistribution is done by linking to the
+   official product listing, not by re-uploading the file.
+
+   Decompilation and reverse engineering are permitted only to the extent that
+   applicable law allows them regardless of this clause.
+
+3. Modification
+
+   Configuration and language files may be modified freely. Modifying the
+   compiled software is permitted for the user's own use only; the result may
+   not be distributed, and no support is offered for it.
+
+4. Support and updates
+
+   Updates are provided at the author's discretion. Support is offered through
+   the channel named on the product listing.
+
+5. Warranty
+
+   This software is provided "as is", without warranty of any kind, express or
+   implied. In no event shall the author be liable for any claim, damages or
+   other liability arising from its use.
+
+Third-party components bundled with this software keep their own licences,
+which are listed in the product documentation.
