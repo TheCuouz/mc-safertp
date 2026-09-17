@@ -6,6 +6,7 @@ import com.cristian.safertp.cfg.ConfigManager;
 import com.cristian.safertp.cfg.MessageManager;
 import com.cristian.safertp.command.RtpCommand;
 import com.cristian.safertp.config.WorldConfigRegistry;
+import com.cristian.safertp.finder.CacheRefiller;
 import com.cristian.safertp.finder.LocationCache;
 import com.cristian.safertp.finder.LocationFinder;
 import com.cristian.safertp.integration.PapiHook;
@@ -65,30 +66,22 @@ public final class SafeRtpPlugin extends JavaPlugin {
             configManager.cacheSizePerWorld(),
             configManager.cacheRefillThreshold());
 
-        // Background cache refill — schedule 1 location per tick until all worlds reach threshold.
-        java.util.concurrent.atomic.AtomicInteger refillIndex = new java.util.concurrent.atomic.AtomicInteger(0);
+        // Background cache refill — at most one new search per tick, and the searches
+        // still running count towards the cache size (see CacheRefiller).
+        CacheRefiller refiller = new CacheRefiller(
+            () -> locationCache,
+            () -> new java.util.ArrayList<>(worldConfigRegistry.all()),
+            () -> configManager.cacheSizePerWorld(),
+            wc -> {
+                org.bukkit.World w = org.bukkit.Bukkit.getWorld(wc.worldName());
+                return w == null ? null : LocationFinder.findSafe(w, wc, worldGuardHook);
+            });
         getServer().getScheduler().runTaskTimer(this, () -> {
             // Guard the whole per-tick body: an uncaught exception here would
             // make the Bukkit scheduler silently cancel this repeating task,
             // permanently disabling the cache refill for the server's lifetime.
             try {
-                if (!configManager.cacheEnabled()) return;
-                int attempt = 0;
-                int maxAttemptsPerTick = 1;
-                while (attempt < maxAttemptsPerTick) {
-                    var worlds = new java.util.ArrayList<>(worldConfigRegistry.all());
-                    if (worlds.isEmpty()) break;
-                    var wc = worlds.get(refillIndex.getAndIncrement() % worlds.size());
-                    if (!wc.enabled()) { attempt++; continue; }
-                    org.bukkit.World w = org.bukkit.Bukkit.getWorld(wc.worldName());
-                    if (w == null) { attempt++; continue; }
-                    int needed = configManager.cacheSizePerWorld() - locationCache.size(wc.worldName());
-                    if (needed <= 0) { attempt++; continue; }
-                    LocationFinder.findSafe(w, wc, worldGuardHook)
-                        .thenAccept(loc -> locationCache.offer(wc.worldName(), loc))
-                        .exceptionally(ex -> null);
-                    break;
-                }
+                if (configManager.cacheEnabled()) refiller.tick();
             } catch (RuntimeException e) {
                 getSLF4JLogger().warn("Location cache refill tick failed", e);
             }

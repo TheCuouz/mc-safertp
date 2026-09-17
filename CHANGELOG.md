@@ -4,6 +4,21 @@ All notable changes to SafeRTP are documented in this file. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 follows semantic versioning.
 
+## [1.2.5] - 2026-09-17
+
+### Fixed
+
+- The background location cache no longer piles up searches. It used to start a
+  new search every tick while the cache was not full, without counting the ones
+  still running, so on a busy or freshly generated world the server kept
+  generating terrain until it ran out of memory. Searches in progress now count
+  towards `cache.size-per-world`.
+- A world where no safe spot can be found (a void or fully ocean world, for
+  example) is retried every 5 minutes instead of every tick.
+- A player can only have one `/rtp` search running at a time.
+- The fallback language when `language` is missing from `config.yml` is now
+  English.
+
 ## [1.2.2] - 2026-05-18
 
 ### Fixed

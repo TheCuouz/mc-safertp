@@ -24,6 +24,9 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -34,6 +37,8 @@ public class RtpCommand implements CommandExecutor {
     private static final MiniMessage MM = MiniMessage.miniMessage();
     private final SafeRtpPlugin plugin;
     private final PluginIdentity identity;
+    /** Players whose search is still running: one search per player at a time. */
+    private final Set<UUID> searching = ConcurrentHashMap.newKeySet();
 
     public RtpCommand(SafeRtpPlugin plugin) {
         this.plugin = plugin;
@@ -157,6 +162,11 @@ public class RtpCommand implements CommandExecutor {
         }
         WorldConfig config = optConfig.get();
 
+        if (searching.contains(player.getUniqueId())) {
+            player.sendActionBar(MM.deserialize(msg("rtp-searching")));
+            return;
+        }
+
         // Cooldown check
         if (!bypassCooldown && !player.hasPermission("safertp.bypass.cooldown")) {
             long remaining = plugin.getCooldownManager().getRemaining(player.getUniqueId());
@@ -192,8 +202,13 @@ public class RtpCommand implements CommandExecutor {
                 if (cached.isPresent()) {
                     locationFuture = CompletableFuture.completedFuture(cached.get());
                 } else {
+                    if (!searching.add(player.getUniqueId())) {
+                        player.sendActionBar(MM.deserialize(msg("rtp-searching")));
+                        return;
+                    }
                     player.sendActionBar(MM.deserialize(msg("rtp-searching")));
                     locationFuture = LocationFinder.findSafe(finalWorld, config, plugin.getWorldGuardHook());
+                    locationFuture.whenComplete((loc, ex) -> searching.remove(player.getUniqueId()));
                 }
 
                 locationFuture.thenAccept(loc -> {
