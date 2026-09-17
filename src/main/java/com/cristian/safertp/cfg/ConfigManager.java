@@ -24,7 +24,7 @@ public final class ConfigManager {
     public FileConfiguration raw() { return cfg; }
 
     /** Active locale (ISO-639-1 two-letter code, lowercase). Default "es". */
-    public String language() { return cfg.getString("language", "es").toLowerCase(); }
+    public String language() { return cfg.getString("language", "en").toLowerCase(); }
 
     // ─── Back ─────────────────────────────────────────────────────────────────
     public boolean backEnabled()        { return cfg.getBoolean("back.enabled", true); }
