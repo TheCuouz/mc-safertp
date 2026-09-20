@@ -4,6 +4,17 @@ All notable changes to SafeRTP are documented in this file. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 follows semantic versioning.
 
+## [1.2.6] — 2026-09-20
+
+### Changed
+- **Menu titles no longer repeat the plugin name.** `◈ Plugin › Section` is now
+  `◈ Section`: measured with the game's own font, the name alone ate more than half
+  of the 160 px a chest title has, so any real section came out cut off with an
+  ellipsis. The diamond keeps the plugin's colour, and anything still too wide is
+  trimmed to fit.
+
+---
+
 ## [1.2.5] - 2026-09-17
 
 ### Fixed
