@@ -183,7 +183,7 @@ public class RtpCommand implements CommandExecutor {
             if (!vault.has(player, config.cost())) {
                 ChatPrefix.send(player, identity,
                     msg("rtp-not-enough-money").replace("<amount>",
-                        String.format("%.2f", config.cost())));
+                        String.format(java.util.Locale.ROOT, "%.2f", config.cost())));
                 return;
             }
         }
@@ -233,7 +233,7 @@ public class RtpCommand implements CommandExecutor {
                             vault.withdraw(player, config.cost());
                             ChatPrefix.send(player, identity,
                                 msg("rtp-cost").replace("<amount>",
-                                    String.format("%.2f", config.cost())));
+                                    String.format(java.util.Locale.ROOT, "%.2f", config.cost())));
                         }
 
                         // Apply cooldown
