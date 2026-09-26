@@ -147,7 +147,7 @@ Aliases: `/randomtp`, `/wild`.
 | `safertp.use` | Ejecutar `/rtp` | `true` |
 | `safertp.back` | Ejecutar `/rtp back` (NUEVO en v1.1.0) | `true` |
 | `safertp.back.nocooldown` | Saltarse el cooldown de `/rtp back` (NUEVO en v1.1.0) | `op` |
-| `safertp.world.<world>` | Permitir RTP en un mundo específico | `op` |
+| `safertp.world.<world>` | Permitir RTP en un mundo específico (ponlo a false para cerrar un mundo) | `true` |
 | `safertp.bypass.cooldown` | Saltarse el cooldown principal de `/rtp` | `op` |
 | `safertp.bypass.cost` | Saltarse el coste en dinero de Vault | `op` |
 | `safertp.cooldown.<n>` | Cooldown por tier — establece tu cooldown de `/rtp` en *n* segundos, el más bajo gana | – |

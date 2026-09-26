@@ -15,6 +15,17 @@ follows semantic versioning.
 
 ---
 
+## [1.2.8] — 2026-09-26
+
+### Fixed
+- **Players without operator can use `/rtp` again.** Every `/rtp` checks
+  `safertp.world.<world>`, but those nodes were never declared, and a node the server
+  doesn't know is operators-only. On a fresh install nobody but operators could teleport.
+  Each world's node is now registered as open to everyone the first time it's checked;
+  set it to `false` in your permissions plugin to close a world.
+
+---
+
 ## [1.2.7] — 2026-09-21
 
 ### Fixed

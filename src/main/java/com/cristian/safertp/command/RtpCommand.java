@@ -100,8 +100,8 @@ public class RtpCommand implements CommandExecutor {
             world = requested;
         }
 
-        if (!player.hasPermission("safertp.world." + world.getName())
-                && !player.hasPermission("safertp.admin")) {
+        String worldNode = WorldPermission.ensureRegistered(Bukkit.getPluginManager(), world.getName());
+        if (!player.hasPermission(worldNode) && !player.hasPermission("safertp.admin")) {
             ChatPrefix.send(player, identity, msg("rtp-world-no-permission"));
             return true;
         }

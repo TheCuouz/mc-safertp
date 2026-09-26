@@ -4,7 +4,7 @@
 |------------|---------|-------------|
 | `safertp.use` | `true` | Use `/rtp` |
 | `safertp.admin` | `op` | `/rtp reload`, `/rtp other <player>` |
-| `safertp.world.<name>` | `op` | Use RTP in the named world |
+| `safertp.world.<name>` | `true` | Use RTP in the named world (set it to false to close a world) |
 | `safertp.bypass.cooldown` | `op` | Skip cooldown entirely |
 | `safertp.bypass.cost` | `op` | Skip economy cost |
 | `safertp.cooldown.<seconds>` | — | Override cooldown to `<seconds>` (lowest granted value wins) |
