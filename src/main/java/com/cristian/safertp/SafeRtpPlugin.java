@@ -16,7 +16,9 @@ import com.cristian.safertp.listener.WarmupListener;
 import com.cristian.safertp.manager.CooldownManager;
 import com.cristian.safertp.manager.WarmupManager;
 import com.ttsstudio.sdk.PluginIdentity;
+import com.ttsstudio.sdk.compat.PluginLog;
 import com.ttsstudio.sdk.console.ConsoleBanner;
+import com.ttsstudio.sdk.text.Texts;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,6 +42,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Texts.install(this);
         long startTime = System.currentTimeMillis();
         configManager = new ConfigManager(this);
         configManager.reload();
@@ -83,20 +86,20 @@ public final class SafeRtpPlugin extends JavaPlugin {
             try {
                 if (configManager.cacheEnabled()) refiller.tick();
             } catch (RuntimeException e) {
-                getSLF4JLogger().warn("Location cache refill tick failed", e);
+                PluginLog.of(this).warn("Location cache refill tick failed", e);
             }
         }, 20L * 60L, 1L);
 
         if (getServer().getPluginManager().isPluginEnabled("Vault")) {
             vaultHook = VaultHook.setup();
             if (vaultHook != null) {
-                getSLF4JLogger().info("Vault economy hooked.");
+                PluginLog.of(this).info("Vault economy hooked.");
             }
         }
 
         worldGuardHook = WorldGuardHook.setup();
         if (worldGuardHook != null) {
-            getSLF4JLogger().info("WorldGuard region protection hooked.");
+            PluginLog.of(this).info("WorldGuard region protection hooked.");
         }
 
         getServer().getPluginManager().registerEvents(new WarmupListener(this), this);
@@ -109,7 +112,7 @@ public final class SafeRtpPlugin extends JavaPlugin {
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new PapiHook(this).register();
-            getSLF4JLogger().info("PlaceholderAPI expansion registered.");
+            PluginLog.of(this).info("PlaceholderAPI expansion registered.");
         }
 
         new Metrics(this, 31364);
@@ -129,10 +132,11 @@ public final class SafeRtpPlugin extends JavaPlugin {
         if (warmupManager != null) warmupManager.cancelAll();
         if (discoveryTracker != null) {
             try { discoveryTracker.save(); } catch (RuntimeException e) {
-                getSLF4JLogger().error("Failed to save discoveries", e);
+                PluginLog.of(this).error("Failed to save discoveries", e);
             }
         }
         ConsoleBanner.disable(this, PluginIdentity.of(this)).emit();
+        Texts.shutdown();
     }
 
     public void reload() {

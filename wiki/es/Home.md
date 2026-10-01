@@ -11,7 +11,7 @@
    ╚══════╝╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝
 ```
 
-**Teletransporte aleatorio seguro para Paper 1.21.x (probado en 1.21.10)** — carga de chunks asíncrona, comprobaciones de seguridad en múltiples pasadas, sin más muertes por lava.
+**Teletransporte aleatorio seguro para Paper y Spigot, de 1.17 a 26.x** — carga de chunks asíncrona, comprobaciones de seguridad en múltiples pasadas, sin más muertes por lava.
 
 > 🏛️ Parte de la suite de plugins de **TTS-Studio** — herramientas premium del lado del servidor, fabricadas para producción.
 
@@ -105,7 +105,7 @@ cp safertp-1.0.0.jar plugins/
 
 | Requisito | Versión | Notas |
 |-----------|---------|-------|
-| Paper | 1.21.x (probado en 1.21.10) | Spigot **no** está soportado |
+| Paper o Spigot | 1.17 – 26.x | También forks como Purpur |
 | Java | 21+ | Requerido |
 | Vault | latest + un plugin de economía | Opcional — habilita el `cost` por RTP |
 | PlaceholderAPI | 2.11.6+ | Opcional — habilita los placeholders |

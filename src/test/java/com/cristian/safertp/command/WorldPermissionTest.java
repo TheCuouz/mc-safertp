@@ -1,18 +1,41 @@
 package com.cristian.safertp.command;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class WorldPermissionTest {
+
+    /** Spigot's Permission constructor asks the server who is subscribed to the node. */
+    @BeforeAll
+    static void fakeServer() {
+        if (Bukkit.getServer() != null) return;
+        PluginManager subscriptions = (PluginManager) Proxy.newProxyInstance(PluginManager.class.getClassLoader(),
+            new Class<?>[]{PluginManager.class}, (proxy, method, args) -> switch (method.getName()) {
+                case "getPermissionSubscriptions" -> Collections.emptySet();
+                default -> null;
+            });
+        Bukkit.setServer((Server) Proxy.newProxyInstance(Server.class.getClassLoader(),
+            new Class<?>[]{Server.class}, (proxy, method, args) -> switch (method.getName()) {
+                case "getPluginManager" -> subscriptions;
+                case "getLogger" -> Logger.getLogger("test");
+                case "getName", "getVersion", "getBukkitVersion" -> "test";
+                default -> null;
+            }));
+    }
 
     /** Only getPermission/addPermission are used; anything else would be a surprise. */
     private static PluginManager fakeManager(Map<String, Permission> registry) {

@@ -4,7 +4,7 @@ description: Safe random teleport with async chunk loading, warmup, cooldowns an
 main: com.cristian.safertp.SafeRtpPlugin
 author: Cristian
 website: https://www.spigotmc.org/resources/safertp/
-api-version: '1.21'
+api-version: '1.17'
 load: POSTWORLD
 folia-supported: false
 

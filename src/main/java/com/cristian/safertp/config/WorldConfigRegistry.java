@@ -1,12 +1,15 @@
 package com.cristian.safertp.config;
 
 import com.cristian.safertp.SafeRtpPlugin;
+import com.ttsstudio.sdk.compat.PluginLog;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import java.util.*;
 
 public class WorldConfigRegistry {
@@ -52,16 +55,19 @@ public class WorldConfigRegistry {
                 sec.getDouble("cost", 0)
             ));
         }
-        plugin.getSLF4JLogger().info("Loaded {} world configs.", configs.size());
+        PluginLog.of(plugin).info("Loaded {} world configs.", configs.size());
     }
 
     private Set<Biome> parseBiomes(List<String> names) {
         Set<Biome> result = new HashSet<>();
         for (String name : names) {
-            try {
-                result.add(Biome.valueOf(name.toUpperCase()));
-            } catch (IllegalArgumentException e) {
-                plugin.getSLF4JLogger().warn("Unknown biome '{}' in worlds.yml, skipping.", name);
+            // Through the registry, not Biome.valueOf: Biome stopped being an enum in 1.21.3.
+            NamespacedKey key = NamespacedKey.fromString(name.trim().toLowerCase(Locale.ROOT));
+            Biome biome = key == null ? null : Registry.BIOME.get(key);
+            if (biome != null) {
+                result.add(biome);
+            } else {
+                PluginLog.of(plugin).warn("Unknown biome '{}' in worlds.yml, skipping.", name);
             }
         }
         return result;

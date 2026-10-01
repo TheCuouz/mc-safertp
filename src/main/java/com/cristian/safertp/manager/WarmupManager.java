@@ -1,6 +1,7 @@
 package com.cristian.safertp.manager;
 
 import com.cristian.safertp.SafeRtpPlugin;
+import com.ttsstudio.sdk.text.Texts;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
@@ -36,14 +37,14 @@ public class WarmupManager {
                 if (remaining <= 0) {
                     active.remove(player.getUniqueId());
                     this.cancel();
-                    player.sendActionBar(Component.empty());
+                    Texts.actionBar(player, Component.empty());
                     onComplete.run();
                     return;
                 }
                 String raw = plugin.getMessagesConfig()
                     .getString("rtp-warmup-action-bar", "<yellow>⏳ <seconds>s")
                     .replace("<seconds>", String.valueOf(remaining));
-                player.sendActionBar(MM.deserialize(raw));
+                Texts.actionBar(player, MM.deserialize(raw));
                 remaining--;
             }
         }.runTaskTimer(plugin, 0L, 20L);

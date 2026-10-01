@@ -10,14 +10,14 @@ This page walks you through getting SafeRTP — part of the **TTS-Studio** plugi
 
 | Software | Minimum Version | Required? |
 |----------|----------------|-----------|
-| [Paper](https://papermc.io/) | **1.21.x** (tested on 1.21.10) | ✅ Yes |
+| [Paper](https://papermc.io/) or Spigot | **1.17 – 26.x** | ✅ Yes |
 | Java | **21** | ✅ Yes |
 | [Vault](https://www.spigotmc.org/resources/vault.34315/) + economy plugin | latest | ⚡ Recommended |
 | [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) | 2.11.6+ | ⚡ Optional |
 
-> ⚠️ **Warning:** SafeRTP uses Paper-specific APIs (`PaperLib` async chunks, Adventure titles). Spigot, Purpur without Paper core, or Folia are **not** supported (`folia-supported: false`).
+> ℹ️ SafeRTP runs on Paper and Spigot. On Paper, chunks load asynchronously; on Spigot they load on the main thread. Folia is not supported yet.
 
-> ⚠️ **Warning:** Java 21 is the minimum. Running on Java 17 will cause the plugin to fail to load.
+> ℹ️ Any Java your server version runs on works (16+ for 1.17).
 
 ---
 
@@ -133,9 +133,9 @@ SafeRTP stores no database — all cooldowns are in-memory only and cleared on s
 
 | Symptom | Likely Cause | Fix |
 |---------|-------------|-----|
-| Plugin not loading | Java < 21 | Upgrade JRE to Java 21+ |
-| `Folia is not supported` | Running on Folia | Use Paper 1.21.x — Folia support is on the roadmap |
-| No TTS-Studio banner on enable | Paper version too old | Use Paper 1.21.x (tested on 1.21.10) |
+| Plugin not loading | Server older than 1.17 | Use 1.17 or newer |
+| `Folia is not supported` | Running on Folia | Use Paper or Spigot — Folia support is on the roadmap |
+| No TTS-Studio banner on enable | Server older than 1.17 | Use 1.17 or newer |
 | `Vault economy hooked.` missing | Vault not installed or no economy provider | Install Vault + an economy plugin (EssentialsX/CMI) |
 | Players keep landing in oceans | Biome blacklist not applied | Confirm `biome-blacklist` in `worlds.yml`, then `/rtp reload` |
 | `No se encontró una ubicación segura` repeatedly | `max-attempts` too low, or radius is mostly water/lava | Increase `max-attempts`, widen blacklist, or move center coords |

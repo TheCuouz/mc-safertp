@@ -40,5 +40,5 @@ jobs:
             ### Installation
             Download the `.jar` file and place it in your `plugins/` folder.
 
-            **Requires:** Paper 1.21.0+ · Java 21+
+            **Requires:** Paper or Spigot 1.17+ · Java 16+
 

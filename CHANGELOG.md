@@ -4,6 +4,16 @@ All notable changes to SafeRTP are documented in this file. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 follows semantic versioning.
 
+## [1.3.0] — 2026-09-27
+
+### Added
+- **Runs on Paper and Spigot, from 1.17 to 26.x.** It used to need Paper 1.21 and Java 21.
+
+### Changed
+- Arrival and discovery sounds take a sound key (`entity.enderman.teleport`) or the old
+  constant name, and particles take their name from any version: a config written for 1.21
+  keeps working on 1.17 and on 26.x.
+
 ## [1.2.6] — 2026-09-20
 
 ### Changed

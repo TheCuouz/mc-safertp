@@ -10,14 +10,14 @@ Esta página te guía para poner en marcha SafeRTP — parte de la suite de plug
 
 | Software | Versión Mínima | ¿Requerido? |
 |----------|----------------|-------------|
-| [Paper](https://papermc.io/) | **1.21.x** (probado en 1.21.10) | ✅ Sí |
+| [Paper](https://papermc.io/) o Spigot | **1.17 – 26.x** | ✅ Sí |
 | Java | **21** | ✅ Sí |
 | [Vault](https://www.spigotmc.org/resources/vault.34315/) + plugin de economía | latest | ⚡ Recomendado |
 | [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) | 2.11.6+ | ⚡ Opcional |
 
-> ⚠️ **Advertencia:** SafeRTP usa APIs específicas de Paper (`PaperLib` para chunks asíncronos, títulos de Adventure). Spigot, Purpur sin core de Paper o Folia **no** están soportados (`folia-supported: false`).
+> ℹ️ SafeRTP funciona en Paper y en Spigot. En Paper los chunks se cargan en segundo plano; en Spigot, en el hilo principal. Folia aún no está soportado.
 
-> ⚠️ **Advertencia:** Java 21 es el mínimo. Ejecutar en Java 17 causará que el plugin no cargue.
+> ℹ️ Sirve la Java que ya use tu versión del servidor (16+ para 1.17).
 
 ---
 
@@ -133,9 +133,9 @@ SafeRTP no almacena ninguna base de datos — todos los enfriamientos están sol
 
 | Síntoma | Causa Probable | Solución |
 |---------|----------------|----------|
-| El plugin no carga | Java < 21 | Actualiza el JRE a Java 21+ |
-| `Folia is not supported` | Ejecutando en Folia | Usa Paper 1.21.x — el soporte de Folia está en la hoja de ruta |
-| Sin banner de TTS-Studio al habilitar | Versión de Paper demasiado antigua | Usa Paper 1.21.x (probado en 1.21.10) |
+| El plugin no carga | Servidor anterior a 1.17 | Usa 1.17 o superior |
+| `Folia is not supported` | Ejecutando en Folia | Usa Paper o Spigot — el soporte de Folia está en la hoja de ruta |
+| Sin banner de TTS-Studio al habilitar | Servidor anterior a 1.17 | Usa 1.17 o superior |
 | Falta `Vault economy hooked.` | Vault no instalado o sin proveedor de economía | Instala Vault + un plugin de economía (EssentialsX/CMI) |
 | Los jugadores siguen aterrizando en océanos | Lista negra de biomas no aplicada | Confirma `biome-blacklist` en `worlds.yml`, luego `/rtp reload` |
 | `No se encontró una ubicación segura` repetidamente | `max-attempts` demasiado bajo, o el radio es mayormente agua/lava | Aumenta `max-attempts`, amplía la lista negra o mueve las coordenadas del centro |
