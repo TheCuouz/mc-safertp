@@ -9,9 +9,12 @@ import com.cristian.safertp.finder.NoSafeLocationException;
 import com.cristian.safertp.integration.VaultHook;
 import com.ttsstudio.sdk.PluginIdentity;
 import com.ttsstudio.sdk.chat.ChatPrefix;
+import com.ttsstudio.sdk.compat.Particles;
+import com.ttsstudio.sdk.compat.PluginLog;
+import com.ttsstudio.sdk.compat.Sounds;
+import com.ttsstudio.sdk.text.Texts;
 import io.papermc.lib.PaperLib;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -21,7 +24,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
@@ -29,6 +31,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import org.bukkit.Keyed;
 
 public class RtpCommand implements CommandExecutor {
 
@@ -163,7 +166,7 @@ public class RtpCommand implements CommandExecutor {
         WorldConfig config = optConfig.get();
 
         if (searching.contains(player.getUniqueId())) {
-            player.sendActionBar(MM.deserialize(msg("rtp-searching")));
+            Texts.actionBar(player, MM.deserialize(msg("rtp-searching")));
             return;
         }
 
@@ -203,10 +206,10 @@ public class RtpCommand implements CommandExecutor {
                     locationFuture = CompletableFuture.completedFuture(cached.get());
                 } else {
                     if (!searching.add(player.getUniqueId())) {
-                        player.sendActionBar(MM.deserialize(msg("rtp-searching")));
+                        Texts.actionBar(player, MM.deserialize(msg("rtp-searching")));
                         return;
                     }
-                    player.sendActionBar(MM.deserialize(msg("rtp-searching")));
+                    Texts.actionBar(player, MM.deserialize(msg("rtp-searching")));
                     locationFuture = LocationFinder.findSafe(finalWorld, config, plugin.getWorldGuardHook());
                     locationFuture.whenComplete((loc, ex) -> searching.remove(player.getUniqueId()));
                 }
@@ -263,7 +266,7 @@ public class RtpCommand implements CommandExecutor {
                     if (cause instanceof NoSafeLocationException) {
                         ChatPrefix.send(player, identity, msg("rtp-no-safe-location"));
                     } else {
-                        plugin.getSLF4JLogger().error("RTP search error", ex);
+                        PluginLog.of(plugin).error("RTP search error", ex);
                     }
                     return null;
                 });
@@ -277,28 +280,25 @@ public class RtpCommand implements CommandExecutor {
         }
 
         if (plugin.getConfigManager().arrivalParticlesEnabled()) {
-            try {
-                org.bukkit.Particle particle = org.bukkit.Particle.valueOf(
-                    plugin.getConfigManager().arrivalParticleType());
-                loc.getWorld().spawnParticle(particle, loc.clone().add(0, 1, 0),
+            if (!Particles.spawn(loc.getWorld(), loc.clone().add(0, 1, 0),
                     plugin.getConfigManager().arrivalParticleCount(),
-                    0.5, 0.8, 0.5, 0.05);
-            } catch (IllegalArgumentException e) {
-                plugin.getSLF4JLogger().warn("Invalid arrival particle type: {}",
+                    0.5, 0.8, 0.5, 0.05, plugin.getConfigManager().arrivalParticleType())) {
+                PluginLog.of(plugin).warn("Invalid arrival particle type: {}",
                     plugin.getConfigManager().arrivalParticleType());
             }
         }
 
         if (plugin.getConfigManager().arrivalSoundEnabled()) {
-            try {
-                org.bukkit.Sound sound = org.bukkit.Sound.valueOf(
-                    plugin.getConfigManager().arrivalSoundType());
-                loc.getWorld().playSound(loc, sound,
-                    plugin.getConfigManager().arrivalSoundVolume(),
-                    plugin.getConfigManager().arrivalSoundPitch());
-            } catch (IllegalArgumentException e) {
-                plugin.getSLF4JLogger().warn("Invalid arrival sound type: {}",
-                    plugin.getConfigManager().arrivalSoundType());
+            String sound = plugin.getConfigManager().arrivalSoundType();
+            if (!Sounds.exists(sound)) {
+                PluginLog.of(plugin).warn("Invalid arrival sound type: {}", sound);
+            } else {
+                for (Player near : loc.getWorld().getPlayers()) {
+                    if (near.getLocation().distanceSquared(loc) > 32 * 32) continue;
+                    Sounds.play(near, loc, sound,
+                        plugin.getConfigManager().arrivalSoundVolume(),
+                        plugin.getConfigManager().arrivalSoundPitch());
+                }
             }
         }
     }
@@ -309,7 +309,7 @@ public class RtpCommand implements CommandExecutor {
         if (tracker == null) return;
 
         String biomeName = formatBiomeName(
-            loc.getWorld().getBiome(loc).getKey().getKey());
+            ((Keyed) loc.getWorld().getBiome(loc)).getKey().getKey());
 
         if (!tracker.discover(player.getUniqueId(), biomeName)) return;
 
@@ -319,28 +319,21 @@ public class RtpCommand implements CommandExecutor {
         String chatStr     = plugin.getMessagesConfig().getString("discovery-chat", "New biome: <biome>")
             .replace("<biome>", biomeName);
 
-        player.showTitle(Title.title(
-            MM.deserialize(titleStr),
-            MM.deserialize(subtitleStr),
-            Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofMillis(500))));
-        player.sendMessage(MM.deserialize(chatStr));
+        Texts.title(player, MM.deserialize(titleStr), MM.deserialize(subtitleStr), 10, 60, 10);
+        Texts.send(player, MM.deserialize(chatStr));
 
         if (plugin.getConfigManager().discoverySoundEnabled()) {
-            try {
-                org.bukkit.Sound sound = org.bukkit.Sound.valueOf(
-                    plugin.getConfigManager().discoverySoundType());
-                player.playSound(player.getLocation(), sound,
+            if (!Sounds.play(player, plugin.getConfigManager().discoverySoundType(),
                     plugin.getConfigManager().discoverySoundVolume(),
-                    plugin.getConfigManager().discoverySoundPitch());
-            } catch (IllegalArgumentException e) {
-                plugin.getSLF4JLogger().warn("Invalid discovery sound: {}",
+                    plugin.getConfigManager().discoverySoundPitch())) {
+                PluginLog.of(plugin).warn("Invalid discovery sound: {}",
                     plugin.getConfigManager().discoverySoundType());
             }
         }
 
         CompletableFuture.runAsync(() -> {
             try { tracker.save(); } catch (RuntimeException e) {
-                plugin.getSLF4JLogger().error("Failed to save discoveries", e);
+                PluginLog.of(plugin).error("Failed to save discoveries", e);
             }
         });
     }

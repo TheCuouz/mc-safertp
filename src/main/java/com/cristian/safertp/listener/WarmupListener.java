@@ -3,6 +3,7 @@ package com.cristian.safertp.listener;
 import com.cristian.safertp.SafeRtpPlugin;
 import com.ttsstudio.sdk.PluginIdentity;
 import com.ttsstudio.sdk.chat.ChatPrefix;
+import com.ttsstudio.sdk.text.Texts;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -36,7 +37,7 @@ public class WarmupListener implements Listener {
                 && from.getBlockZ() == to.getBlockZ()) return;
 
         plugin.getWarmupManager().cancel(player.getUniqueId());
-        player.sendActionBar(Component.empty());
+        Texts.actionBar(player, Component.empty());
         ChatPrefix.send(player, identity,
             plugin.getMessagesConfig().getString("rtp-cancelled-move",
                 "<red>Teleport cancelled: you moved."));
@@ -48,7 +49,7 @@ public class WarmupListener implements Listener {
         if (!plugin.getWarmupManager().isInWarmup(player.getUniqueId())) return;
 
         plugin.getWarmupManager().cancel(player.getUniqueId());
-        player.sendActionBar(Component.empty());
+        Texts.actionBar(player, Component.empty());
         ChatPrefix.send(player, identity,
             plugin.getMessagesConfig().getString("rtp-cancelled-damage",
                 "<red>Teleport cancelled: you took damage."));

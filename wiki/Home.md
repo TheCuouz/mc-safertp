@@ -11,7 +11,7 @@
    ╚══════╝╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝
 ```
 
-**Safe random teleportation for Paper 1.21.x (tested on 1.21.10)** — async chunk loading, multi-pass safety checks, no more lava deaths.
+**Safe random teleportation for Paper and Spigot, 1.17 to 26.x** — async chunk loading, multi-pass safety checks, no more lava deaths.
 
 > 🏛️ Part of the **TTS-Studio** plugin suite — premium server-side tooling, crafted for production.
 
@@ -105,7 +105,7 @@ cp safertp-1.0.0.jar plugins/
 
 | Requirement | Version | Notes |
 |-------------|---------|-------|
-| Paper | 1.21.x (tested on 1.21.10) | Spigot is **not** supported |
+| Paper or Spigot | 1.17 – 26.x | Forks like Purpur work too |
 | Java | 21+ | Required |
 | Vault | latest + an economy plugin | Optional — enables `cost` per RTP |
 | PlaceholderAPI | 2.11.6+ | Optional — enables placeholders |
