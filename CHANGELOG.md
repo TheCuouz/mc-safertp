@@ -4,6 +4,11 @@ All notable changes to SafeRTP are documented in this file. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 follows semantic versioning.
 
+## [1.3.1] — 2026-10-05
+
+### Fixed
+- **A random teleport in the Nether lands inside it.** Every teleport in a Nether world ended on top of the bedrock roof, because the highest block of the column is the roof itself. It now picks the highest safe spot under the ceiling.
+
 ## [1.3.0] — 2026-09-27
 
 ### Added

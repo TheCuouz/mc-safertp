@@ -49,8 +49,19 @@ public final class LocationFinder {
 
         PaperLib.getChunkAtAsync(world, x >> 4, z >> 4, true)
             .thenAccept(chunk -> {
-                int y = world.getHighestBlockYAt(x, z, HeightMap.MOTION_BLOCKING_NO_LEAVES);
-                Location candidate = new Location(world, x + 0.5, y + 1, z + 0.5);
+                Location candidate;
+                if (world.getEnvironment() == World.Environment.NETHER) {
+                    // The highest block of a Nether column is the bedrock roof:
+                    // every teleport landed on top of it.
+                    int feet = standableBelowCeiling(
+                        y -> world.getBlockAt(x, y, z).getType().isSolid(),
+                        y -> world.getBlockAt(x, y, z).getType().isAir(),
+                        world.getMinHeight(), Math.min(world.getMaxHeight(), 127));
+                    candidate = feet == Integer.MIN_VALUE ? null : new Location(world, x + 0.5, feet, z + 0.5);
+                } else {
+                    int y = world.getHighestBlockYAt(x, z, HeightMap.MOTION_BLOCKING_NO_LEAVES);
+                    candidate = new Location(world, x + 0.5, y + 1, z + 0.5);
+                }
                 if (SafetyChecker.isSafe(candidate, config, wgHook)) {
                     future.complete(candidate);
                 } else {
@@ -61,5 +72,20 @@ public final class LocationFinder {
                 attemptFind(world, config, wgHook, attempt + 1, future);
                 return null;
             });
+    }
+
+    /**
+     * Where to stand in a column that has a ceiling: the highest spot with two
+     * blocks of air over solid ground, strictly under the roof.
+     *
+     * @return the Y of the feet, or {@code Integer.MIN_VALUE} if the column has none
+     */
+    public static int standableBelowCeiling(java.util.function.IntPredicate solid,
+                                            java.util.function.IntPredicate air,
+                                            int minY, int roofY) {
+        for (int feet = roofY - 3; feet > minY + 1; feet--) {
+            if (air.test(feet) && air.test(feet + 1) && solid.test(feet - 1)) return feet;
+        }
+        return Integer.MIN_VALUE;
     }
 }
