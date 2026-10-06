@@ -1,7 +1,7 @@
 name: SafeRTP
 version: ${project.version}
 description: Safe random teleport with async chunk loading, warmup, cooldowns and Vault support.
-main: com.cristian.safertp.SafeRtpPlugin
+main: com.ttsstudio.safertp.SafeRtpPlugin
 author: Cristian
 website: https://www.spigotmc.org/resources/safertp/
 api-version: '1.17'
