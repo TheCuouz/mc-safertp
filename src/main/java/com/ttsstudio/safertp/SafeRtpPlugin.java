@@ -61,8 +61,8 @@ public final class SafeRtpPlugin extends JavaPlugin {
 
         discoveryTracker = new BiomeDiscoveryTracker(getDataFolder());
         discoveryTracker.load();
-        Bukkit.getScheduler().runTaskTimer(this,
-            () -> backLocationStore.purgeExpired(),
+        com.ttsstudio.sdk.scheduler.Scheduler.asyncTimer(this,
+            t -> backLocationStore.purgeExpired(),
             BACK_PURGE_INTERVAL_TICKS, BACK_PURGE_INTERVAL_TICKS);
 
         locationCache = new LocationCache(
@@ -79,7 +79,8 @@ public final class SafeRtpPlugin extends JavaPlugin {
                 org.bukkit.World w = org.bukkit.Bukkit.getWorld(wc.worldName());
                 return w == null ? null : LocationFinder.findSafe(w, wc, worldGuardHook);
             });
-        getServer().getScheduler().runTaskTimer(this, () -> {
+        // Global on Folia: it only starts searches; each search reads its chunk on that chunk's region.
+        com.ttsstudio.sdk.scheduler.Scheduler.globalTimer(this, t -> {
             // Guard the whole per-tick body: an uncaught exception here would
             // make the Bukkit scheduler silently cancel this repeating task,
             // permanently disabling the cache refill for the server's lifetime.
