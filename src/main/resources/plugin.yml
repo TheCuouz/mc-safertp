@@ -6,7 +6,6 @@ author: Cristian
 website: https://www.spigotmc.org/resources/safertp/
 api-version: '1.17'
 load: POSTWORLD
-folia-supported: false
 
 softdepend:
   - Vault
@@ -39,3 +38,4 @@ permissions:
   safertp.back.nocooldown:
     description: Bypass the /rtp back cooldown
     default: op
+folia-supported: true

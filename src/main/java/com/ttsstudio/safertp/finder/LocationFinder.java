@@ -29,6 +29,11 @@ public final class LocationFinder {
         return future;
     }
 
+    /** For the scheduler: on Folia the column is read on the region that owns it. */
+    private static org.bukkit.plugin.Plugin owner() {
+        return org.bukkit.plugin.java.JavaPlugin.getProvidingPlugin(LocationFinder.class);
+    }
+
     private static void attemptFind(World world, WorldConfig config,
                                      @Nullable WorldGuardHook wgHook,
                                      int attempt, CompletableFuture<Location> future) {
@@ -48,7 +53,8 @@ public final class LocationFinder {
         int z = config.centerZ() + (int) (radius * Math.sin(angle));
 
         PaperLib.getChunkAtAsync(world, x >> 4, z >> 4, true)
-            .thenAccept(chunk -> {
+            .thenAccept(chunk -> com.ttsstudio.sdk.scheduler.Scheduler.onLocation(owner(),
+                new Location(world, x, 64, z), () -> {
                 Location candidate;
                 if (world.getEnvironment() == World.Environment.NETHER) {
                     // The highest block of a Nether column is the bedrock roof:
@@ -67,7 +73,7 @@ public final class LocationFinder {
                 } else {
                     attemptFind(world, config, wgHook, attempt + 1, future);
                 }
-            })
+            }))
             .exceptionally(ex -> {
                 attemptFind(world, config, wgHook, attempt + 1, future);
                 return null;

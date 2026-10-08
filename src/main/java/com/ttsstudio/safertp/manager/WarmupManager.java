@@ -5,8 +5,6 @@ import com.ttsstudio.sdk.text.Texts;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +13,7 @@ public class WarmupManager {
 
     private static final MiniMessage MM = MiniMessage.miniMessage();
     private final SafeRtpPlugin plugin;
-    private final ConcurrentHashMap<UUID, BukkitTask> active = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, com.ttsstudio.sdk.scheduler.Task> active = new ConcurrentHashMap<>();
 
     public WarmupManager(SafeRtpPlugin plugin) {
         this.plugin = plugin;
@@ -24,30 +22,27 @@ public class WarmupManager {
     public void start(Player player, int seconds, Runnable onComplete) {
         cancel(player.getUniqueId());
 
-        BukkitTask task = new BukkitRunnable() {
-            int remaining = seconds;
-
-            @Override
-            public void run() {
-                if (!player.isOnline()) {
-                    active.remove(player.getUniqueId());
-                    this.cancel();
-                    return;
-                }
-                if (remaining <= 0) {
-                    active.remove(player.getUniqueId());
-                    this.cancel();
-                    Texts.actionBar(player, Component.empty());
-                    onComplete.run();
-                    return;
-                }
-                String raw = plugin.getMessagesConfig()
-                    .getString("rtp-warmup-action-bar", "<yellow>⏳ <seconds>s")
-                    .replace("<seconds>", String.valueOf(remaining));
-                Texts.actionBar(player, MM.deserialize(raw));
-                remaining--;
+        // Counts down where the player is (their region on Folia).
+        final int[] remaining = {seconds};
+        com.ttsstudio.sdk.scheduler.Task task = com.ttsstudio.sdk.scheduler.Scheduler.entityTimer(plugin, player, t -> {
+            if (!player.isOnline()) {
+                active.remove(player.getUniqueId());
+                t.cancel();
+                return;
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+            if (remaining[0] <= 0) {
+                active.remove(player.getUniqueId());
+                t.cancel();
+                Texts.actionBar(player, Component.empty());
+                onComplete.run();
+                return;
+            }
+            String raw = plugin.getMessagesConfig()
+                .getString("rtp-warmup-action-bar", "<yellow>⏳ <seconds>s")
+                .replace("<seconds>", String.valueOf(remaining[0]));
+            Texts.actionBar(player, MM.deserialize(raw));
+            remaining[0]--;
+        }, 1L, 20L);
 
         active.put(player.getUniqueId(), task);
     }
@@ -57,12 +52,12 @@ public class WarmupManager {
     }
 
     public void cancel(UUID uuid) {
-        BukkitTask task = active.remove(uuid);
+        com.ttsstudio.sdk.scheduler.Task task = active.remove(uuid);
         if (task != null) task.cancel();
     }
 
     public void cancelAll() {
-        active.values().forEach(BukkitTask::cancel);
+        active.values().forEach(com.ttsstudio.sdk.scheduler.Task::cancel);
         active.clear();
     }
 }

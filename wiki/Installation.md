@@ -15,7 +15,7 @@ This page walks you through getting SafeRTP — part of the **TTS-Studio** plugi
 | [Vault](https://www.spigotmc.org/resources/vault.34315/) + economy plugin | latest | ⚡ Recommended |
 | [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) | 2.11.6+ | ⚡ Optional |
 
-> ℹ️ SafeRTP runs on Paper and Spigot. On Paper, chunks load asynchronously; on Spigot they load on the main thread. Folia is not supported yet.
+> ℹ️ SafeRTP runs on Paper, Spigot and Folia. On Paper and Folia, chunks load asynchronously; on Spigot they load on the main thread.
 
 > ℹ️ Any Java your server version runs on works (16+ for 1.17).
 
@@ -134,7 +134,6 @@ SafeRTP stores no database — all cooldowns are in-memory only and cleared on s
 | Symptom | Likely Cause | Fix |
 |---------|-------------|-----|
 | Plugin not loading | Server older than 1.17 | Use 1.17 or newer |
-| `Folia is not supported` | Running on Folia | Use Paper or Spigot — Folia support is on the roadmap |
 | No TTS-Studio banner on enable | Server older than 1.17 | Use 1.17 or newer |
 | `Vault economy hooked.` missing | Vault not installed or no economy provider | Install Vault + an economy plugin (EssentialsX/CMI) |
 | Players keep landing in oceans | Biome blacklist not applied | Confirm `biome-blacklist` in `worlds.yml`, then `/rtp reload` |

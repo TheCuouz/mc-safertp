@@ -15,7 +15,7 @@ Esta página te guía para poner en marcha SafeRTP — parte de la suite de plug
 | [Vault](https://www.spigotmc.org/resources/vault.34315/) + plugin de economía | latest | ⚡ Recomendado |
 | [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) | 2.11.6+ | ⚡ Opcional |
 
-> ℹ️ SafeRTP funciona en Paper y en Spigot. En Paper los chunks se cargan en segundo plano; en Spigot, en el hilo principal. Folia aún no está soportado.
+> ℹ️ SafeRTP funciona en Paper, Spigot y Folia. En Paper y Folia los chunks se cargan en segundo plano; en Spigot, en el hilo principal.
 
 > ℹ️ Sirve la Java que ya use tu versión del servidor (16+ para 1.17).
 
@@ -134,7 +134,6 @@ SafeRTP no almacena ninguna base de datos — todos los enfriamientos están sol
 | Síntoma | Causa Probable | Solución |
 |---------|----------------|----------|
 | El plugin no carga | Servidor anterior a 1.17 | Usa 1.17 o superior |
-| `Folia is not supported` | Ejecutando en Folia | Usa Paper o Spigot — el soporte de Folia está en la hoja de ruta |
 | Sin banner de TTS-Studio al habilitar | Servidor anterior a 1.17 | Usa 1.17 o superior |
 | Falta `Vault economy hooked.` | Vault no instalado o sin proveedor de economía | Instala Vault + un plugin de economía (EssentialsX/CMI) |
 | Los jugadores siguen aterrizando en océanos | Lista negra de biomas no aplicada | Confirma `biome-blacklist` en `worlds.yml`, luego `/rtp reload` |
