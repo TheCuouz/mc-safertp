@@ -4,6 +4,11 @@ All notable changes to SafeRTP are documented in this file. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 follows semantic versioning.
 
+## [1.4.0] — 2026-10-08
+
+### Added
+- **Runs on Folia.** Every task now goes through the TTS-Studio scheduler: on Paper and Spigot nothing changes, and on Folia (`folia-supported: true`) each piece of work runs on the region that owns what it touches. Tested on Folia 1.21.11.
+
 ## [1.3.1] — 2026-10-05
 
 ### Fixed
