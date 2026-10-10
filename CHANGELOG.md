@@ -4,6 +4,14 @@ All notable changes to SafeRTP are documented in this file. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 follows semantic versioning.
 
+## [1.4.3] — 2026-10-10
+
+### Fixed
+- **World names in the arrival message.** "Teleported to world (x, y, z)" showed the internal world id; `world-names.<id>` in the lang file gives each world a display name (the Spanish file names the three vanilla worlds). Without an entry the id is shown, as before.
+- "Players only" from the console came from the code; it is now `players-only` in the lang file.
+- Spanish: "Teleportando en 5s..." is now "Teletransportando en 5 s." and the cooldown lines use "5 s".
+- No more "Could not save worlds.yml ... already exists" warning at startup: the file is only written when it is missing.
+
 ## [1.4.2] — 2026-10-10
 
 ### Fixed
