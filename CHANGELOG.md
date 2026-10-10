@@ -8,6 +8,7 @@ follows semantic versioning.
 
 ### Fixed
 - **Biome names follow the player's language.** The biome discovery title and chat line showed the English id ("Cherry Grove") on every server. The Spanish lang file now names every vanilla biome (`biome-names.<id>`, editable), and a biome missing from the list shows in each player's own game language in chat.
+- TTS-SDK 0.13.2: `chat-prefix` in config.yml replaces the branded chat prefix, and the shared buttons read `sdk.*` from the lang file.
 
 ## [1.4.1] — 2026-10-09
 
