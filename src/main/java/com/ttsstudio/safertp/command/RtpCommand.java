@@ -89,7 +89,7 @@ public class RtpCommand implements CommandExecutor {
 
         // /rtp [world]
         if (!(sender instanceof Player player)) {
-            ChatPrefix.error(sender, identity, "Only players can use /rtp.");
+            ChatPrefix.send(sender, identity, msg("players-only"));
             return true;
         }
         if (!player.hasPermission("safertp.use")) {
@@ -122,7 +122,7 @@ public class RtpCommand implements CommandExecutor {
 
     private boolean handleBack(CommandSender sender) {
         if (!(sender instanceof Player player)) {
-            ChatPrefix.error(sender, identity, "Players only.");
+            ChatPrefix.send(sender, identity, msg("players-only"));
             return true;
         }
         if (!player.hasPermission("safertp.back")) {
@@ -273,7 +273,7 @@ public class RtpCommand implements CommandExecutor {
 
                         ChatPrefix.send(player, identity,
                             msg("rtp-success")
-                                .replace("<world>", finalWorld.getName())
+                                .replace("<world>", worldName(finalWorld))
                                 .replace("<x>", String.valueOf(loc.getBlockX()))
                                 .replace("<y>", String.valueOf(loc.getBlockY()))
                                 .replace("<z>", String.valueOf(loc.getBlockZ())));
@@ -372,5 +372,11 @@ public class RtpCommand implements CommandExecutor {
 
     private String msg(String key) {
         return plugin.getMessagesConfig().getString(key, "<red>Missing: " + key);
+    }
+
+    /** Display name of a world: {@code world-names.<world>} from the lang file, else its id. */
+    private String worldName(World world) {
+        String custom = plugin.getMessagesConfig().optional("world-names." + world.getName());
+        return custom != null && !custom.isBlank() ? custom : world.getName();
     }
 }

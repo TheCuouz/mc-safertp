@@ -46,7 +46,6 @@ public final class SafeRtpPlugin extends JavaPlugin {
         long startTime = System.currentTimeMillis();
         configManager = new ConfigManager(this);
         configManager.reload();
-        saveResource("worlds.yml", false);
         messageManager = new MessageManager(this, configManager);
         messageManager.reload();
 

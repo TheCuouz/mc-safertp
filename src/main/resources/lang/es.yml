@@ -2,12 +2,12 @@
 # Todos los strings son MiniMessage. El prefijo de chat lo añade el SDK
 # automáticamente — no hace falta <prefix> aquí.
 
-rtp-warmup-action-bar: "<yellow>⏳ Teleportando en <bold><seconds>s</bold>... ¡No te muevas!"
+rtp-warmup-action-bar: "<yellow>⏳ Teletransportando en <bold><seconds> s</bold>. ¡No te muevas!"
 rtp-searching: "<gray>Buscando localización segura..."
 rtp-success: "<green>¡Teletransportado a <world> (<x>, <y>, <z>)!"
 rtp-cancelled-move: "<red>Teletransporte cancelado al moverte."
 rtp-cancelled-damage: "<red>Teletransporte cancelado al recibir daño."
-rtp-cooldown: "<red>Debes esperar <seconds>s antes de usar /rtp de nuevo."
+rtp-cooldown: "<red>Debes esperar <seconds> s antes de usar /rtp de nuevo."
 rtp-no-permission: "<red>No tienes permiso para usar /rtp."
 rtp-world-disabled: "<red>El RTP no está habilitado en este mundo."
 rtp-world-no-permission: "<red>No tienes permiso para hacer RTP en ese mundo."
@@ -17,17 +17,24 @@ rtp-not-enough-money: "<red>Necesitas <amount> para usar /rtp."
 rtp-player-not-found: "<red>Jugador '<player>' no encontrado."
 rtp-other-success: "<green>Teletransportaste a <player> a <world>."
 reload-success: "<green>SafeRTP recargado correctamente."
+players-only: "<red>Solo para jugadores."
 
 # /rtp back
 back-success: "<green>Has vuelto a tu ubicación anterior."
 back-no-location: "<red>No hay una ubicación anterior disponible (puede haber expirado)."
-back-on-cooldown: "<yellow>Debes esperar {seconds}s para volver a usar /rtp back."
+back-on-cooldown: "<yellow>Debes esperar {seconds} s para volver a usar /rtp back."
 back-no-permission: "<red>No tienes permiso para usar /rtp back."
 
 # Descubrimiento de bioma
 discovery-title: "<gold><bold>¡Nuevo Descubrimiento!</bold></gold>"
 discovery-subtitle: "<yellow><biome></yellow>"
 discovery-chat: "<gray>Has descubierto un nuevo bioma: <yellow><biome></yellow>"
+
+# Nombre de cada mundo en los mensajes. Un mundo sin entrada sale con su id.
+world-names:
+  world: "Mundo"
+  world_nether: "Nether"
+  world_the_end: "End"
 
 # Nombre de cada bioma en los avisos. Un bioma sin entrada (de un mod o de una
 # versión nueva) sale en el idioma del juego de cada jugador.
