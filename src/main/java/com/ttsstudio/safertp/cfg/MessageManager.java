@@ -35,6 +35,12 @@ public final class MessageManager {
         return locales.get(key, p1, v1, p2, v2);
     }
 
+    /** The lang value for {@code key}, or null when no lang file defines it. */
+    public String optional(String key) {
+        String v = locales.raw(key);
+        return v.startsWith("<red>[missing: ") ? null : v;
+    }
+
     /**
      * Back-compat bridge for legacy call sites that used
      * {@code plugin.getMessagesConfig().getString("key", "")}.

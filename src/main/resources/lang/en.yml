@@ -28,3 +28,6 @@ back-no-permission: "<red>You don't have permission to use /rtp back."
 discovery-title: "<gold><bold>New Discovery!</bold></gold>"
 discovery-subtitle: "<yellow><biome></yellow>"
 discovery-chat: "<gray>You've discovered a new biome: <yellow><biome></yellow>"
+
+# Biome name shown in the notices (optional). Without an entry each player sees
+# it in their own game language. Example:  biome-names: { cherry_grove: "Cherry Grove" }

@@ -4,6 +4,16 @@ All notable changes to SafeRTP are documented in this file. The format is based
 on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 follows semantic versioning.
 
+## [1.4.2] — 2026-10-10
+
+### Fixed
+- **Biome names follow the player's language.** The biome discovery title and chat line showed the English id ("Cherry Grove") on every server. The Spanish lang file now names every vanilla biome (`biome-names.<id>`, editable), and a biome missing from the list shows in each player's own game language in chat.
+
+## [1.4.1] — 2026-10-09
+
+### Added
+- **`default-world` fallback.** A plain `/rtp` typed in a world where RTP is disabled (a spawn or lobby world) now teleports into the world named by `default-world` in `config.yml`. Empty by default, so nothing changes for existing setups.
+
 ## [1.4.0] — 2026-10-08
 
 ### Added

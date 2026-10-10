@@ -14,9 +14,13 @@ import com.ttsstudio.sdk.compat.PluginLog;
 import com.ttsstudio.sdk.compat.Sounds;
 import com.ttsstudio.sdk.text.Texts;
 import io.papermc.lib.PaperLib;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -94,6 +98,9 @@ public class RtpCommand implements CommandExecutor {
         }
 
         World world = player.getWorld();
+        if (args.length == 0) {
+            world = resolveDefaultWorld(world);
+        }
         if (args.length >= 1) {
             World requested = Bukkit.getWorld(args[0]);
             if (requested == null) {
@@ -155,6 +162,16 @@ public class RtpCommand implements CommandExecutor {
             ChatPrefix.send(player, identity, msg("back-success"));
         });
         return true;
+    }
+
+    /** Bare /rtp from a world without RTP (a spawn/lobby world) falls back to config default-world. */
+    private World resolveDefaultWorld(World current) {
+        var cfg = plugin.getWorldConfigRegistry().get(current.getName());
+        if (cfg.isPresent() && cfg.get().enabled()) return current;
+        String name = plugin.getConfigManager().defaultWorld();
+        if (name == null || name.isBlank()) return current;
+        World fallback = Bukkit.getWorld(name);
+        return fallback != null ? fallback : current;
     }
 
     private void doRtp(Player player, World world, boolean bypassCooldown) {
@@ -308,19 +325,18 @@ public class RtpCommand implements CommandExecutor {
         BiomeDiscoveryTracker tracker = plugin.getDiscoveryTracker();
         if (tracker == null) return;
 
-        String biomeName = formatBiomeName(
-            ((Keyed) loc.getWorld().getBiome(loc)).getKey().getKey());
+        NamespacedKey key = ((Keyed) loc.getWorld().getBiome(loc)).getKey();
+        String biomeName = formatBiomeName(key.getKey());
 
         if (!tracker.discover(player.getUniqueId(), biomeName)) return;
 
+        TagResolver biome = Placeholder.component("biome", biomeComponent(key, biomeName));
         String titleStr    = plugin.getMessagesConfig().getString("discovery-title", "<gold>New Discovery!");
-        String subtitleStr = plugin.getMessagesConfig().getString("discovery-subtitle", "<yellow><biome>")
-            .replace("<biome>", biomeName);
-        String chatStr     = plugin.getMessagesConfig().getString("discovery-chat", "New biome: <biome>")
-            .replace("<biome>", biomeName);
+        String subtitleStr = plugin.getMessagesConfig().getString("discovery-subtitle", "<yellow><biome>");
+        String chatStr     = plugin.getMessagesConfig().getString("discovery-chat", "New biome: <biome>");
 
-        Texts.title(player, MM.deserialize(titleStr), MM.deserialize(subtitleStr), 10, 60, 10);
-        Texts.send(player, MM.deserialize(chatStr));
+        Texts.title(player, MM.deserialize(titleStr), MM.deserialize(subtitleStr, biome), 10, 60, 10);
+        Texts.send(player, MM.deserialize(chatStr, biome));
 
         if (plugin.getConfigManager().discoverySoundEnabled()) {
             if (!Sounds.play(player, plugin.getConfigManager().discoverySoundType(),
@@ -336,6 +352,16 @@ public class RtpCommand implements CommandExecutor {
                 PluginLog.of(plugin).error("Failed to save discoveries", e);
             }
         });
+    }
+
+    /**
+     * Biome name for the player: {@code biome-names.<key>} from the lang file if set, otherwise
+     * the client's own translation (each player sees it in their game language).
+     */
+    private Component biomeComponent(NamespacedKey key, String fallback) {
+        String custom = plugin.getMessagesConfig().optional("biome-names." + key.getKey());
+        if (custom != null && !custom.isBlank()) return MM.deserialize(custom);
+        return Component.translatable("biome." + key.getNamespace() + "." + key.getKey(), fallback);
     }
 
     private static String formatBiomeName(String key) {

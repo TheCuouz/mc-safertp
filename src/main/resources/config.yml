@@ -9,6 +9,10 @@ language: en
 
 config-version: 2
 
+# World used by a plain /rtp when the player stands in a world where RTP is
+# disabled (a spawn or lobby world). Empty = no fallback.
+default-world: ""
+
 # ============================================================
 # BACK COMMAND  (v1.1.0)
 # ============================================================

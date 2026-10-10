@@ -26,6 +26,9 @@ public final class ConfigManager {
     /** Active locale (ISO-639-1 two-letter code, lowercase). Default "es". */
     public String language() { return cfg.getString("language", "en").toLowerCase(); }
 
+    /** World used by a bare /rtp when the player's current world has RTP disabled (empty = none). */
+    public String defaultWorld() { return cfg.getString("default-world", ""); }
+
     // ─── Back ─────────────────────────────────────────────────────────────────
     public boolean backEnabled()        { return cfg.getBoolean("back.enabled", true); }
     public long    backTtlSeconds()     { return cfg.getLong("back.ttl-seconds", 300L); }
